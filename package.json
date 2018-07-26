@@ -1,0 +1,33 @@
+{
+  "name": "purescript-bouzuya-datetime",
+  "description": "`Bouzuya.DateTime` module",
+  "version": "0.0.0",
+  "author": {
+    "email": "m@bouzuya.net",
+    "name": "bouzuya",
+    "url": "https://bouzuya.net/"
+  },
+  "bugs": {
+    "url": "https://github.com/bouzuya/purescript-bouzuya-datetime/issues"
+  },
+  "devDependencies": {
+    "psc-package": "^0.3.2",
+    "purescript": "^0.12.0"
+  },
+  "homepage": "https://github.com/bouzuya/purescript-bouzuya-datetime#readme",
+  "keywords": [],
+  "license": "MIT",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bouzuya/purescript-bouzuya-datetime.git"
+  },
+  "scripts": {
+    "build": "psc-package build",
+    "postinstall": "psc-package install",
+    "psc-package": "psc-package",
+    "purs": "purs",
+    "repl": "psc-package repl",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
