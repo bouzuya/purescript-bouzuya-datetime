@@ -24,10 +24,11 @@
   },
   "scripts": {
     "build": "psc-package build",
+    "build:test": "psc-package sources | xargs purs compile 'src/**/*.purs' 'test/**/*.purs'",
     "postinstall": "psc-package install",
     "psc-package": "psc-package",
     "purs": "purs",
     "repl": "psc-package repl",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run build:test && node -e \"require('./output/Test.Main').main()\""
   }
 }
