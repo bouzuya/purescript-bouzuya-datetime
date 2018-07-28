@@ -2,9 +2,11 @@ module Bouzuya.DateTime.Component.WeekOfYear
   ( WeekOfYear
   ) where
 
+import Data.Date (Month(..), Weekday(..), Year, exactDate, isLeapYear, weekday)
 import Data.Enum (class BoundedEnum, class Enum, Cardinality(..), fromEnum, toEnum)
-import Data.Maybe (Maybe(..))
-import Prelude (class Bounded, class Eq, class Ord, class Show, otherwise, show, (&&), (+), (-), (<<<), (<=), (<>))
+import Data.Maybe (Maybe(..), fromJust)
+import Partial.Unsafe (unsafePartial)
+import Prelude (class Bounded, class Eq, class Ord, class Show, join, map, otherwise, show, (&&), (+), (-), (<<<), (<=), (<>), (==), (||))
 
 newtype WeekOfYear = WeekOfYear Int
 
@@ -29,3 +31,17 @@ instance enumWeekOfYear :: Enum WeekOfYear where
 
 instance showWeekOfYear :: Show WeekOfYear where
   show (WeekOfYear n) = "(WeekOfYear " <> show n <> ")"
+
+startWeekdayOfYear :: Year -> Weekday
+startWeekdayOfYear y =
+  let m = join (map (exactDate y January) (toEnum 1))
+  in
+  weekday (unsafePartial (fromJust m))
+
+weeksInYear :: Year -> Int
+weeksInYear y =
+  let
+    w = startWeekdayOfYear y
+    p = (w == Thursday) || (w == Wednesday && isLeapYear y)
+  in
+    52 + if p then 1 else 0
