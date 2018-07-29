@@ -23,9 +23,15 @@ derive newtype instance eqWeekOfYear :: Eq WeekOfYear
 
 derive newtype instance ordWeekOfYear :: Ord WeekOfYear
 
+longYearLastWeekOfYear :: WeekOfYear
+longYearLastWeekOfYear = WeekOfYear 53
+
+shortYearLastWeekOfYear :: WeekOfYear
+shortYearLastWeekOfYear = WeekOfYear 52
+
 instance boundedWeekOfYear :: Bounded WeekOfYear where
   bottom = WeekOfYear 1
-  top = WeekOfYear 53
+  top = longYearLastWeekOfYear
 
 instance boundedEnumWeekOfYear :: BoundedEnum WeekOfYear where
   cardinality = Cardinality 53
@@ -45,7 +51,7 @@ firstDateOfYear :: Year -> Date
 firstDateOfYear y = unsafePartial (fromJust (exactDate y bottom bottom))
 
 firstWeekOfYear :: Year -> WeekOfYear
-firstWeekOfYear _ = WeekOfYear 1
+firstWeekOfYear _ = bottom
 
 firstWeekdayOfYear :: Year -> Weekday
 firstWeekdayOfYear y = weekday (firstDateOfYear y)
@@ -57,9 +63,9 @@ lastWeekOfYear :: Year -> WeekOfYear
 lastWeekOfYear y =
   let
     w = firstWeekdayOfYear y
-    p = (w == Thursday) || (w == Wednesday && isLeapYear y)
+    isLongYear = (w == Thursday) || (w == Wednesday && isLeapYear y)
   in
-    WeekOfYear (52 + if p then 1 else 0)
+    if isLongYear then longYearLastWeekOfYear else shortYearLastWeekOfYear
 
 lastWeekdayOfYear :: Year -> Weekday
 lastWeekdayOfYear y = weekday (lastDateOfYear y)
@@ -74,10 +80,10 @@ toWeekDate d =
     doy = dayOfYear d
   in
     if doy < dayOfYear d0104 && weekday d > weekday d0104 then
-      let py = unsafePartial (fromJust (pred y))
+      let py = unsafePartial (fromJust (pred y)) -- FIXME
       in WeekDate py (lastWeekOfYear py) w
     else if doy > dayOfYear d1228 && weekday d < weekday d1228 then
-      let ny = unsafePartial (fromJust (succ y))
+      let ny = unsafePartial (fromJust (succ y)) -- FIXME
       in WeekDate ny (firstWeekOfYear ny) w
     else
       let woy = WeekOfYear (((fromEnum doy) + (fromEnum (weekday d0104)) - 4 - 1) / 7 + 1)
