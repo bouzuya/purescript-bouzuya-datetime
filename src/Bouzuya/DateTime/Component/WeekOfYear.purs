@@ -1,5 +1,6 @@
 module Bouzuya.DateTime.Component.WeekOfYear
   ( WeekOfYear
+  , firstWeekOfYear
   , lastWeekOfYear
   , startWeekdayOfYear
   , weekOfYear
@@ -7,7 +8,7 @@ module Bouzuya.DateTime.Component.WeekOfYear
 
 import Bouzuya.DateTime.Component.DayOfYear (dayOfYear)
 import Data.Date (Date, Month(..), Weekday(..), Year, exactDate, isLeapYear, weekday, year)
-import Data.Enum (class BoundedEnum, class Enum, Cardinality(..), fromEnum, pred, toEnum)
+import Data.Enum (class BoundedEnum, class Enum, Cardinality(..), fromEnum, pred, succ, toEnum)
 import Data.Maybe (Maybe(..), fromJust)
 import Partial.Unsafe (unsafePartial)
 import Prelude (class Bounded, class Eq, class Ord, class Show, join, map, otherwise, show, (&&), (+), (-), (/), (<), (<$>), (<<<), (<=), (<>), (==), (>), (||))
@@ -36,6 +37,9 @@ instance enumWeekOfYear :: Enum WeekOfYear where
 instance showWeekOfYear :: Show WeekOfYear where
   show (WeekOfYear n) = "(WeekOfYear " <> show n <> ")"
 
+firstWeekOfYear :: Year -> WeekOfYear
+firstWeekOfYear _ = WeekOfYear 1
+
 lastWeekOfYear :: Year -> WeekOfYear
 lastWeekOfYear y =
   let
@@ -47,8 +51,7 @@ lastWeekOfYear y =
 startWeekdayOfYear :: Year -> Weekday
 startWeekdayOfYear y =
   let m = join (map (exactDate y January) (toEnum 1))
-  in
-  weekday (unsafePartial (fromJust m))
+  in weekday (unsafePartial (fromJust m))
 
 weekOfYear :: Date -> WeekOfYear
 weekOfYear d =
@@ -61,6 +64,6 @@ weekOfYear d =
     if doy < dayOfYear d0104 && weekday d > weekday d0104 then
       lastWeekOfYear (unsafePartial (fromJust (pred y))) -- prev year
     else if doy > dayOfYear d1228 && weekday d < weekday d1228 then
-      WeekOfYear 1 -- next year
+      firstWeekOfYear (unsafePartial (fromJust (succ y))) -- next year
     else
       WeekOfYear (((fromEnum doy) + (fromEnum (weekday d0104)) - 4 - 1) / 7 + 1)
