@@ -1,5 +1,7 @@
 module Bouzuya.DateTime.Component.WeekOfYear
   ( WeekOfYear
+  , startWeekdayOfYear
+  , weeksInYear
   ) where
 
 import Data.Date (Month(..), Weekday(..), Year, exactDate, isLeapYear, weekday)
