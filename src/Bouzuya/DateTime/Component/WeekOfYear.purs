@@ -13,7 +13,7 @@ import Data.Date (Date, Month(..), Weekday(..), Year, exactDate, isLeapYear, wee
 import Data.Enum (class BoundedEnum, class Enum, Cardinality(..), fromEnum, pred, succ, toEnum)
 import Data.Maybe (Maybe(..), fromJust)
 import Partial.Unsafe (unsafePartial)
-import Prelude (class Bounded, class Eq, class Ord, class Show, bottom, join, map, otherwise, show, top, (&&), (+), (-), (/), (<), (<$>), (<<<), (<=), (<>), (==), (>), (||))
+import Prelude (class Bounded, class Eq, class Ord, class Show, bottom, join, otherwise, show, top, (&&), (+), (-), (/), (<), (<$>), (<<<), (<=), (<>), (==), (>), (||))
 
 data WeekDate = WeekDate Year WeekOfYear Weekday
 
@@ -41,13 +41,17 @@ instance enumWeekOfYear :: Enum WeekOfYear where
 instance showWeekOfYear :: Show WeekOfYear where
   show (WeekOfYear n) = "(WeekOfYear " <> show n <> ")"
 
+firstDateOfYear :: Year -> Date
+firstDateOfYear y = unsafePartial (fromJust (exactDate y bottom bottom))
+
 firstWeekOfYear :: Year -> WeekOfYear
 firstWeekOfYear _ = WeekOfYear 1
 
 firstWeekdayOfYear :: Year -> Weekday
-firstWeekdayOfYear y =
-  let m = join (map (exactDate y January) (toEnum 1))
-  in weekday (unsafePartial (fromJust m))
+firstWeekdayOfYear y = weekday (firstDateOfYear y)
+
+lastDateOfYear :: Year -> Date
+lastDateOfYear y = unsafePartial (fromJust (exactDate y top top))
 
 lastWeekOfYear :: Year -> WeekOfYear
 lastWeekOfYear y =
@@ -58,13 +62,7 @@ lastWeekOfYear y =
     WeekOfYear (52 + if p then 1 else 0)
 
 lastWeekdayOfYear :: Year -> Weekday
-lastWeekdayOfYear y =
-  let w = firstWeekdayOfYear y
-  in
-    if isLeapYear y then
-      if w == top then bottom else unsafePartial (fromJust (succ w))
-    else
-      w
+lastWeekdayOfYear y = weekday (lastDateOfYear y)
 
 toWeekDate :: Date -> WeekDate
 toWeekDate d =
