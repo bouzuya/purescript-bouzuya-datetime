@@ -1,8 +1,8 @@
 module Bouzuya.DateTime.Component.WeekOfYear
   ( WeekOfYear
+  , lastWeekOfYear
   , startWeekdayOfYear
   , weekOfYear
-  , weeksInYear
   ) where
 
 import Bouzuya.DateTime.Component.DayOfYear (dayOfYear)
@@ -36,6 +36,14 @@ instance enumWeekOfYear :: Enum WeekOfYear where
 instance showWeekOfYear :: Show WeekOfYear where
   show (WeekOfYear n) = "(WeekOfYear " <> show n <> ")"
 
+lastWeekOfYear :: Year -> WeekOfYear
+lastWeekOfYear y =
+  let
+    w = startWeekdayOfYear y
+    p = (w == Thursday) || (w == Wednesday && isLeapYear y)
+  in
+    WeekOfYear (52 + if p then 1 else 0)
+
 startWeekdayOfYear :: Year -> Weekday
 startWeekdayOfYear y =
   let m = join (map (exactDate y January) (toEnum 1))
@@ -51,16 +59,8 @@ weekOfYear d =
     doy = dayOfYear d
   in
     if doy < dayOfYear d0104 && weekday d > weekday d0104 then
-      WeekOfYear (weeksInYear (unsafePartial (fromJust (pred y)))) -- prev year
+      lastWeekOfYear (unsafePartial (fromJust (pred y))) -- prev year
     else if doy > dayOfYear d1228 && weekday d < weekday d1228 then
       WeekOfYear 1 -- next year
     else
       WeekOfYear (((fromEnum doy) + (fromEnum (weekday d0104)) - 4 - 1) / 7 + 1)
-
-weeksInYear :: Year -> Int
-weeksInYear y =
-  let
-    w = startWeekdayOfYear y
-    p = (w == Thursday) || (w == Wednesday && isLeapYear y)
-  in
-    52 + if p then 1 else 0
