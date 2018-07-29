@@ -2,7 +2,7 @@ module Bouzuya.DateTime.Component.WeekOfYear
   ( WeekOfYear
   , firstWeekOfYear
   , lastWeekOfYear
-  , startWeekdayOfYear
+  , firstWeekdayOfYear
   , weekOfYear
   , weekYear
   ) where
@@ -43,18 +43,18 @@ instance showWeekOfYear :: Show WeekOfYear where
 firstWeekOfYear :: Year -> WeekOfYear
 firstWeekOfYear _ = WeekOfYear 1
 
+firstWeekdayOfYear :: Year -> Weekday
+firstWeekdayOfYear y =
+  let m = join (map (exactDate y January) (toEnum 1))
+  in weekday (unsafePartial (fromJust m))
+
 lastWeekOfYear :: Year -> WeekOfYear
 lastWeekOfYear y =
   let
-    w = startWeekdayOfYear y
+    w = firstWeekdayOfYear y
     p = (w == Thursday) || (w == Wednesday && isLeapYear y)
   in
     WeekOfYear (52 + if p then 1 else 0)
-
-startWeekdayOfYear :: Year -> Weekday
-startWeekdayOfYear y =
-  let m = join (map (exactDate y January) (toEnum 1))
-  in weekday (unsafePartial (fromJust m))
 
 toWeekDate :: Date -> WeekDate
 toWeekDate d =
