@@ -13,6 +13,8 @@ import Data.Maybe (Maybe(..), fromJust)
 import Partial.Unsafe (unsafePartial)
 import Prelude (class Bounded, class Eq, class Ord, class Show, join, map, otherwise, show, (&&), (+), (-), (/), (<), (<$>), (<<<), (<=), (<>), (==), (>), (||))
 
+data WeekDate = WeekDate Year WeekOfYear Weekday
+
 newtype WeekOfYear = WeekOfYear Int
 
 derive newtype instance eqWeekOfYear :: Eq WeekOfYear
@@ -53,17 +55,26 @@ startWeekdayOfYear y =
   let m = join (map (exactDate y January) (toEnum 1))
   in weekday (unsafePartial (fromJust m))
 
-weekOfYear :: Date -> WeekOfYear
-weekOfYear d =
+toWeekDate :: Date -> WeekDate
+toWeekDate d =
   let
     y = year d
+    w = weekday d
     d0104 = unsafePartial (fromJust (join (exactDate y January <$> (toEnum 4))))
     d1228 = unsafePartial (fromJust (join (exactDate y December <$> (toEnum 28))))
     doy = dayOfYear d
   in
     if doy < dayOfYear d0104 && weekday d > weekday d0104 then
-      lastWeekOfYear (unsafePartial (fromJust (pred y))) -- prev year
+      let py = unsafePartial (fromJust (pred y))
+      in WeekDate py (lastWeekOfYear py) w
     else if doy > dayOfYear d1228 && weekday d < weekday d1228 then
-      firstWeekOfYear (unsafePartial (fromJust (succ y))) -- next year
+      let ny = unsafePartial (fromJust (succ y))
+      in WeekDate ny (firstWeekOfYear ny) w
     else
-      WeekOfYear (((fromEnum doy) + (fromEnum (weekday d0104)) - 4 - 1) / 7 + 1)
+      let woy = WeekOfYear (((fromEnum doy) + (fromEnum (weekday d0104)) - 4 - 1) / 7 + 1)
+      in WeekDate y woy w
+
+weekOfYear :: Date -> WeekOfYear
+weekOfYear d =
+  let (WeekDate _ w _) = toWeekDate d
+  in w
