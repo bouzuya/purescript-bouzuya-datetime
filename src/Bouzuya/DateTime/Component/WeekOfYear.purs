@@ -1,8 +1,9 @@
 module Bouzuya.DateTime.Component.WeekOfYear
   ( WeekOfYear
   , firstWeekOfYear
-  , lastWeekOfYear
   , firstWeekdayOfYear
+  , lastWeekOfYear
+  , lastWeekdayOfYear
   , weekOfYear
   , weekYear
   ) where
@@ -12,7 +13,7 @@ import Data.Date (Date, Month(..), Weekday(..), Year, exactDate, isLeapYear, wee
 import Data.Enum (class BoundedEnum, class Enum, Cardinality(..), fromEnum, pred, succ, toEnum)
 import Data.Maybe (Maybe(..), fromJust)
 import Partial.Unsafe (unsafePartial)
-import Prelude (class Bounded, class Eq, class Ord, class Show, join, map, otherwise, show, (&&), (+), (-), (/), (<), (<$>), (<<<), (<=), (<>), (==), (>), (||))
+import Prelude (class Bounded, class Eq, class Ord, class Show, bottom, join, map, otherwise, show, top, (&&), (+), (-), (/), (<), (<$>), (<<<), (<=), (<>), (==), (>), (||))
 
 data WeekDate = WeekDate Year WeekOfYear Weekday
 
@@ -55,6 +56,15 @@ lastWeekOfYear y =
     p = (w == Thursday) || (w == Wednesday && isLeapYear y)
   in
     WeekOfYear (52 + if p then 1 else 0)
+
+lastWeekdayOfYear :: Year -> Weekday
+lastWeekdayOfYear y =
+  let w = firstWeekdayOfYear y
+  in
+    if isLeapYear y then
+      if w == top then bottom else unsafePartial (fromJust (succ w))
+    else
+      w
 
 toWeekDate :: Date -> WeekDate
 toWeekDate d =

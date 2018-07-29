@@ -1,7 +1,7 @@
 module Test.WeekOfYear (tests) where
 
-import Bouzuya.DateTime.Component.WeekOfYear (firstWeekOfYear, lastWeekOfYear, firstWeekdayOfYear, weekOfYear, weekYear)
-import Data.DateTime (Weekday(..), exactDate)
+import Bouzuya.DateTime.Component.WeekOfYear (firstWeekOfYear, firstWeekdayOfYear, lastWeekOfYear, lastWeekdayOfYear, weekOfYear, weekYear)
+import Data.DateTime (Weekday(..), exactDate, weekday)
 import Data.Enum (toEnum)
 import Data.Maybe (fromJust)
 import Partial.Unsafe (unsafePartial)
@@ -35,6 +35,9 @@ tests = suite "Bouzuya.DateTime.Component.WeekOfYear" do
     Assert.equal (unsafeWeekOfYear 53) (lastWeekOfYear (unsafeYear 2015)) -- not leap year & *Thu*
     Assert.equal (unsafeWeekOfYear 52) (lastWeekOfYear (unsafeYear 2018)) -- not leap year & Mon
     Assert.equal (unsafeWeekOfYear 53) (lastWeekOfYear (unsafeYear 2020)) -- *leap year* & *Wed*
+  test "lastWeekdayOfYear" do
+    Assert.equal (weekday (unsafeDate 2000 12 31)) (lastWeekdayOfYear (unsafeYear 2000)) -- leap year && Sat
+    Assert.equal (weekday (unsafeDate 2015 12 31)) (firstWeekdayOfYear (unsafeYear 2015)) -- not leap year && Thu
   test "weekOfYear" do
     -- --01-04/--12-28
     Assert.equal (unsafeWeekOfYear 1) (weekOfYear (unsafeDate 2004 1 4))
