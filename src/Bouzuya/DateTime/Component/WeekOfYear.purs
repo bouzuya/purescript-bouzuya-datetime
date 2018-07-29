@@ -4,6 +4,7 @@ module Bouzuya.DateTime.Component.WeekOfYear
   , lastWeekOfYear
   , startWeekdayOfYear
   , weekOfYear
+  , weekYear
   ) where
 
 import Bouzuya.DateTime.Component.DayOfYear (dayOfYear)
@@ -78,3 +79,8 @@ weekOfYear :: Date -> WeekOfYear
 weekOfYear d =
   let (WeekDate _ w _) = toWeekDate d
   in w
+
+weekYear :: Date -> Year
+weekYear d =
+  let (WeekDate y _ _) = toWeekDate d
+  in y
