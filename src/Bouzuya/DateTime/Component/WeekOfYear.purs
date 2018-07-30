@@ -8,12 +8,12 @@ module Bouzuya.DateTime.Component.WeekOfYear
   , weekYear
   ) where
 
-import Bouzuya.DateTime.Component.DayOfYear (dayOfYear)
+import Bouzuya.DateTime.Component.DayOfYear (dayOfYear, exactDateFromDayOfYear)
 import Data.Date (Date, Month(..), Weekday(..), Year, exactDate, isLeapYear, weekday, year)
 import Data.Enum (class BoundedEnum, class Enum, Cardinality(..), fromEnum, pred, succ, toEnum)
 import Data.Maybe (Maybe(..), fromJust)
 import Partial.Unsafe (unsafePartial)
-import Prelude (class Bounded, class Eq, class Ord, class Show, bottom, join, otherwise, show, top, (&&), (+), (-), (/), (<), (<$>), (<<<), (<=), (<>), (==), (>), (||))
+import Prelude (class Bounded, class Eq, class Ord, class Show, bottom, join, otherwise, pure, show, top, (&&), (*), (+), (-), (/), (<), (<$>), (<*>), (<<<), (<=), (<>), (==), (>), (||))
 
 data WeekDate = WeekDate Year WeekOfYear Weekday
 
@@ -47,6 +47,13 @@ instance enumWeekOfYear :: Enum WeekOfYear where
 instance showWeekOfYear :: Show WeekOfYear where
   show (WeekOfYear n) = "(WeekOfYear " <> show n <> ")"
 
+exactDateFromWeekOfYear :: Year -> WeekOfYear -> Weekday -> Maybe Date
+exactDateFromWeekOfYear wy woy w
+  | lastWeekOfYear wy < woy = Nothing
+  | otherwise =
+    let wd = WeekDate wy woy w
+    in pure (toDate wd)
+
 firstDateOfYear :: Year -> Date
 firstDateOfYear y = unsafePartial (fromJust (exactDate y bottom bottom))
 
@@ -69,6 +76,18 @@ lastWeekOfYear y =
 
 lastWeekdayOfYear :: Year -> Weekday
 lastWeekdayOfYear y = weekday (lastDateOfYear y)
+
+toDate :: WeekDate -> Date
+toDate (WeekDate y (WeekOfYear w) d) =
+  let
+    dayOfYear = (w - 1) * 7 + (fromEnum d)
+    dayOfYearTop = if isLeapYear y then 366 else 365
+  in
+    unsafePartial (fromJust (join
+      if dayOfYear > dayOfYearTop
+      then exactDateFromDayOfYear <$> (succ y) <*> (toEnum (dayOfYear - dayOfYearTop))
+      else exactDateFromDayOfYear <$> (pure y) <*> (toEnum dayOfYear)
+    ))
 
 toWeekDate :: Date -> WeekDate
 toWeekDate d =
