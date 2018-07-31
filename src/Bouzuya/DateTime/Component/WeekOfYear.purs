@@ -1,5 +1,6 @@
 module Bouzuya.DateTime.Component.WeekOfYear
   ( WeekOfYear
+  , exactDateFromWeekOfYear
   , firstWeekOfYear
   , firstWeekdayOfYear
   , lastWeekOfYear
@@ -13,7 +14,7 @@ import Data.Date (Date, Month(..), Weekday(..), Year, exactDate, isLeapYear, wee
 import Data.Enum (class BoundedEnum, class Enum, Cardinality(..), fromEnum, pred, succ, toEnum)
 import Data.Maybe (Maybe(..), fromJust)
 import Partial.Unsafe (unsafePartial)
-import Prelude (class Bounded, class Eq, class Ord, class Show, bottom, join, otherwise, pure, show, top, (&&), (*), (+), (-), (/), (<), (<$>), (<*>), (<<<), (<=), (<>), (==), (>), (||))
+import Prelude (class Bounded, class Eq, class Ord, class Show, bind, bottom, join, negate, otherwise, pure, show, top, (&&), (*), (+), (-), (/), (<), (<$>), (<*>), (<<<), (<=), (<>), (==), (>), (||))
 
 data WeekDate = WeekDate Year WeekOfYear Weekday
 
@@ -80,12 +81,28 @@ lastWeekdayOfYear y = weekday (lastDateOfYear y)
 toDate :: WeekDate -> Date
 toDate (WeekDate y (WeekOfYear w) d) =
   let
-    dayOfYear = (w - 1) * 7 + (fromEnum d)
-    dayOfYearTop = if isLeapYear y then 366 else 365
+    dayOfYearOffset = case firstWeekdayOfYear y of
+      Monday -> 0
+      Tuesday -> -1
+      Wednesday -> -2
+      Thursday -> -3
+      Friday -> 3
+      Saturday -> 2
+      Sunday -> 1
+    dayOfYear = (w - 1) * 7 + (fromEnum d) + dayOfYearOffset
+    dayOfYearTop y' = if isLeapYear y' then 366 else 365
   in
     unsafePartial (fromJust (join
-      if dayOfYear > dayOfYearTop
-      then exactDateFromDayOfYear <$> (succ y) <*> (toEnum (dayOfYear - dayOfYearTop))
+      if dayOfYear <= 0
+      then do
+        py <- pred y
+        doy <- toEnum ((dayOfYearTop py) - dayOfYear)
+        pure (exactDateFromDayOfYear py doy)
+      else if dayOfYear > dayOfYearTop y
+      then do
+        ny <- succ y
+        doy <- toEnum (dayOfYear - (dayOfYearTop y))
+        pure (exactDateFromDayOfYear ny doy)
       else exactDateFromDayOfYear <$> (pure y) <*> (toEnum dayOfYear)
     ))
 
