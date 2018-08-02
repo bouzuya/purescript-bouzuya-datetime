@@ -3,7 +3,9 @@ module Test.WeekOfYear (tests) where
 import Bouzuya.DateTime.Component.WeekOfYear (exactDateFromWeekOfYear, firstWeekOfYear, firstWeekdayOfYear, lastWeekOfYear, lastWeekdayOfYear, weekOfYear, weekYear)
 import Data.DateTime (Weekday(..), exactDate, weekday)
 import Data.Enum (toEnum)
+import Data.Foldable (for_)
 import Data.Maybe (Maybe(..), fromJust)
+import Data.Tuple (Tuple(..))
 import Partial.Unsafe (unsafePartial)
 import Prelude (discard, join, (<$>), (<*>))
 import Test.Unit (TestSuite, suite, test)
@@ -66,11 +68,14 @@ tests = suite "Bouzuya.DateTime.Component.WeekOfYear" do
     Assert.equal Monday (firstWeekdayOfYear (unsafeYear 2018))
     Assert.equal Wednesday (firstWeekdayOfYear (unsafeYear 2020))
   test "lastWeekOfYear" do
-    Assert.equal (unsafeWeekOfYear 52) (lastWeekOfYear (unsafeYear 2000)) -- leap year & Sat
-    Assert.equal (unsafeWeekOfYear 53) (lastWeekOfYear (unsafeYear 2004)) -- leap year & *Thu*
-    Assert.equal (unsafeWeekOfYear 53) (lastWeekOfYear (unsafeYear 2015)) -- not leap year & *Thu*
-    Assert.equal (unsafeWeekOfYear 52) (lastWeekOfYear (unsafeYear 2018)) -- not leap year & Mon
-    Assert.equal (unsafeWeekOfYear 53) (lastWeekOfYear (unsafeYear 2020)) -- *leap year* & *Wed*
+    for_
+      [ Tuple 52 2000 -- leap year & Sat
+      , Tuple 53 2004 -- leap year & *Thu*
+      , Tuple 53 2015 -- not leap year & *Thu*
+      , Tuple 52 2018 -- not leap year & Mon
+      , Tuple 53 2020 -- *leap year* & *Wed*
+      ]
+      \(Tuple w y) -> Assert.equal (unsafeWeekOfYear w) (lastWeekOfYear (unsafeYear y))
   test "lastWeekdayOfYear" do
     Assert.equal (weekday (unsafeDate 2000 12 31)) (lastWeekdayOfYear (unsafeYear 2000)) -- leap year && Sat
     Assert.equal (weekday (unsafeDate 2015 12 31)) (firstWeekdayOfYear (unsafeYear 2015)) -- not leap year && Thu
