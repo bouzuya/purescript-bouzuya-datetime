@@ -96,7 +96,7 @@ toDate (WeekDate y (WeekOfYear w) d) =
       if dayOfYear <= 0
       then do
         py <- pred y
-        doy <- toEnum ((dayOfYearTop py) - dayOfYear)
+        doy <- toEnum ((dayOfYearTop py) + dayOfYear)
         pure (exactDateFromDayOfYear py doy)
       else if dayOfYear > dayOfYearTop y
       then do
