@@ -14,7 +14,7 @@ import Data.Date (Date, Month(..), Weekday(..), Year, exactDate, isLeapYear, wee
 import Data.Enum (class BoundedEnum, class Enum, Cardinality(..), fromEnum, pred, succ, toEnum)
 import Data.Maybe (Maybe(..), fromJust)
 import Partial.Unsafe (unsafePartial)
-import Prelude (class Bounded, class Eq, class Ord, class Show, bind, bottom, join, negate, otherwise, pure, show, top, (&&), (*), (+), (-), (/), (<), (<$>), (<*>), (<<<), (<=), (<>), (==), (>), (||))
+import Prelude (class Bounded, class Eq, class Ord, class Show, bind, bottom, identity, join, negate, otherwise, pure, show, top, (&&), (*), (+), (-), (/), (<), (<$>), (<*>), (<<<), (<=), (<>), (==), (>), (>>=), (||))
 
 data WeekDate = WeekDate Year WeekOfYear Weekday
 
@@ -91,20 +91,21 @@ toDate (WeekDate y (WeekOfYear w) d) =
       Sunday -> 1
     dayOfYear = (w - 1) * 7 + (fromEnum d) + dayOfYearOffset
     dayOfYearTop y' = if isLeapYear y' then 366 else 365
-  in
-    unsafePartial (fromJust (join
+    dateMaybe =
       if dayOfYear <= 0
       then do
         py <- pred y
         doy <- toEnum ((dayOfYearTop py) + dayOfYear)
-        pure (exactDateFromDayOfYear py doy)
+        exactDateFromDayOfYear py doy
       else if dayOfYear > dayOfYearTop y
       then do
         ny <- succ y
         doy <- toEnum (dayOfYear - (dayOfYearTop y))
-        pure (exactDateFromDayOfYear ny doy)
-      else exactDateFromDayOfYear <$> (pure y) <*> (toEnum dayOfYear)
-    ))
+        exactDateFromDayOfYear ny doy
+      else
+        exactDateFromDayOfYear <$> (pure y) <*> (toEnum dayOfYear) >>= identity
+  in
+    unsafePartial (fromJust dateMaybe)
 
 toWeekDate :: Date -> WeekDate
 toWeekDate d =
