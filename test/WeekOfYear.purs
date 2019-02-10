@@ -6,8 +6,9 @@ import Data.Enum (toEnum)
 import Data.Foldable (for_)
 import Data.Maybe (Maybe(..), fromJust)
 import Data.Tuple (Tuple(..))
+import Data.Tuple.Nested (tuple6, uncurry6)
 import Partial.Unsafe (unsafePartial)
-import Prelude (bottom, discard, identity, join, (&&), (-), (<$>), (<*>), (==), (>>=))
+import Prelude (bottom, discard, join, (-), (<$>), (<*>), (>>=))
 import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 
@@ -24,18 +25,22 @@ tests = suite "Bouzuya.DateTime.Component.WeekOfYear" do
       let weekOfYearMaybe = toEnum w
       in unsafePartial (fromJust weekOfYearMaybe)
   test "exactDateFromWeekOfYear (firstWeekdayOfYear)" do
-    let
-      f w y o m d =
-        (toEnum w) == (firstWeekdayOfYear <$> toEnum y) &&
-        (exactDate <$> toEnum (y - o) <*> toEnum m <*> toEnum d >>= identity) ==
-        (toEnum y >>= \y' -> exactDateFromWeekOfYear y' bottom bottom)
-    Assert.assert "Mon YYYY-W01-1 = YYYY-01-01" (f 1 2018 0 1 1)
-    Assert.assert "Tue YYYY-W01-1 = YYYY-12-31" (f 2 2019 1 12 31)
-    Assert.assert "Wed YYYY-W01-1 = YYYY-12-30" (f 3 2020 1 12 30)
-    Assert.assert "Thu YYYY-W01-1 = YYYY-12-29" (f 4 2026 1 12 29)
-    Assert.assert "Fri YYYY-W01-1 = YYYY-01-04" (f 5 2021 0 1 4)
-    Assert.assert "Sat YYYY-W01-1 = YYYY-01-03" (f 6 2022 0 1 3)
-    Assert.assert "Sun YYYY-W01-1 = YYYY-01-02" (f 7 2023 0 1 2)
+    for_
+      [ tuple6 "Mon YYYY-W01-1 = YYYY-01-01" 1 2018 0 1 1
+      , tuple6 "Tue YYYY-W01-1 = YYYY-12-31" 2 2019 1 12 31
+      , tuple6 "Wed YYYY-W01-1 = YYYY-12-30" 3 2020 1 12 30
+      , tuple6 "Thu YYYY-W01-1 = YYYY-12-29" 4 2026 1 12 29
+      , tuple6 "Fri YYYY-W01-1 = YYYY-01-04" 5 2021 0 1 4
+      , tuple6 "Sat YYYY-W01-1 = YYYY-01-03" 6 2022 0 1 3
+      , tuple6 "Sun YYYY-W01-1 = YYYY-01-02" 7 2023 0 1 2
+      ]
+      (uncurry6
+        (\s w y o m d -> do
+          Assert.equal (toEnum w) (firstWeekdayOfYear <$> toEnum y)
+          Assert.equal'
+            s
+            (join (exactDate <$> toEnum (y - o) <*> toEnum m <*> toEnum d))
+            (toEnum y >>= \y' -> exactDateFromWeekOfYear y' bottom bottom)))
   test "exactDateFromWeekOfYear" do
     -- --01-04/--12-28
     Assert.equal (Just (unsafeDate 2004 1 4)) (exactDateFromWeekOfYear (unsafeYear 2004) (unsafeWeekOfYear 1) Sunday)
