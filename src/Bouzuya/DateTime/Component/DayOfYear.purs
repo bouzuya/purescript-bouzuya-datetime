@@ -14,7 +14,7 @@ import Data.Maybe (Maybe(..), fromJust)
 import Data.Time.Duration (Days(..))
 import Data.Tuple (Tuple(..), fst)
 import Partial.Unsafe (unsafePartial)
-import Prelude (class Bounded, class Eq, class Ord, class Show, otherwise, show, (&&), (+), (-), (<<<), (<=), (<>), (==), (>>=))
+import Prelude (class Bounded, class Eq, class Ord, class Show, bottom, otherwise, show, top, (&&), (+), (-), (<<<), (<=), (<>), (==), (>>=))
 
 newtype DayOfYear = DayOfYear Int
 
@@ -91,7 +91,7 @@ fromDays :: Days -> Maybe DayOfYear
 fromDays (Days n) = Int.fromNumber n >>= toEnum
 
 startOfYear :: Date -> Date
-startOfYear d = unsafeDate (year d) January (unsafeDay 1)
+startOfYear d = unsafePartial (fromJust (exactDate (year d) bottom bottom))
 
 toDays :: DayOfYear -> Days
 toDays (DayOfYear n) = Days (Int.toNumber n)
