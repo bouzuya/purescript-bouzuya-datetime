@@ -9,7 +9,7 @@ module Bouzuya.DateTime.Component.WeekOfYear
   , weekYear
   ) where
 
-import Bouzuya.DateTime.Component.DayOfYear (dayOfYear, exactDateFromDayOfYear)
+import Bouzuya.OrdinalDate.Component.DayOfYear as DayOfYear
 import Data.Date (Date, Month(..), Weekday(..), Year, exactDate, isLeapYear, weekday, year)
 import Data.Enum (class BoundedEnum, class Enum, Cardinality(..), fromEnum, pred, succ, toEnum)
 import Data.Maybe (Maybe(..), fromJust)
@@ -96,14 +96,14 @@ toDate (WeekDate y (WeekOfYear w) d) =
       then do
         py <- pred y
         doy <- toEnum ((dayOfYearTop py) + dayOfYear)
-        exactDateFromDayOfYear py doy
+        DayOfYear.exactDateFromDayOfYear py doy
       else if dayOfYear > dayOfYearTop y
       then do
         ny <- succ y
         doy <- toEnum (dayOfYear - (dayOfYearTop y))
-        exactDateFromDayOfYear ny doy
+        DayOfYear.exactDateFromDayOfYear ny doy
       else
-        exactDateFromDayOfYear <$> (pure y) <*> (toEnum dayOfYear) >>= identity
+        DayOfYear.exactDateFromDayOfYear <$> (pure y) <*> (toEnum dayOfYear) >>= identity
   in
     unsafePartial (fromJust dateMaybe)
 
@@ -114,12 +114,12 @@ toWeekDate d =
     w = weekday d
     d0104 = unsafePartial (fromJust (join (exactDate y January <$> (toEnum 4))))
     d1228 = unsafePartial (fromJust (join (exactDate y December <$> (toEnum 28))))
-    doy = dayOfYear d
+    doy = DayOfYear.dayOfYear d
   in
-    if doy < dayOfYear d0104 && weekday d > weekday d0104 then
+    if doy < DayOfYear.dayOfYear d0104 && weekday d > weekday d0104 then
       let py = unsafePartial (fromJust (pred y)) -- FIXME
       in WeekDate py (lastWeekOfYear py) w
-    else if doy > dayOfYear d1228 && weekday d < weekday d1228 then
+    else if doy > DayOfYear.dayOfYear d1228 && weekday d < weekday d1228 then
       let ny = unsafePartial (fromJust (succ y)) -- FIXME
       in WeekDate ny (firstWeekOfYear ny) w
     else

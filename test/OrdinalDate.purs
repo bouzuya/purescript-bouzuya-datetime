@@ -2,9 +2,9 @@ module Test.OrdinalDate
   ( tests
   ) where
 
-import Bouzuya.DateTime as DayOfYear
 import Bouzuya.OrdinalDate (OrdinalDate)
 import Bouzuya.OrdinalDate as OrdinalDate
+import Bouzuya.OrdinalDate.Component.DayOfYear as DayOfYear
 import Data.Enum as Enum
 import Data.Maybe (Maybe(..))
 import Prelude (bottom, discard, identity, map, pure, top, unit, (&&), (<), (<$>), (<*>), (>>=))

@@ -1,4 +1,4 @@
-module Bouzuya.DateTime.Component.DayOfYear
+module Bouzuya.OrdinalDate.Component.DayOfYear
   ( DayOfYear
   , canonicalDateFromDayOfYear
   , dayOfYear
@@ -14,7 +14,7 @@ import Data.Maybe (Maybe(..), fromJust)
 import Data.Time.Duration (Days(..))
 import Data.Tuple (Tuple(..), fst)
 import Partial.Unsafe (unsafePartial)
-import Prelude (class Bounded, class Eq, class Ord, class Show, bottom, otherwise, show, top, (&&), (+), (-), (<<<), (<=), (<>), (==), (>>=))
+import Prelude (class Bounded, class Eq, class Ord, class Show, bottom, otherwise, show, (&&), (+), (-), (<<<), (<=), (<>), (==), (>>=))
 
 newtype DayOfYear = DayOfYear Int
 

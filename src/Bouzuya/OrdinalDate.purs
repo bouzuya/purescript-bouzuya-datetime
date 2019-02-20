@@ -7,8 +7,8 @@ module Bouzuya.OrdinalDate
   , toDate
   ) where
 
-import Bouzuya.DateTime (DayOfYear)
-import Bouzuya.DateTime.Component.DayOfYear as DayOfYear
+import Bouzuya.OrdinalDate.Component.DayOfYear (DayOfYear)
+import Bouzuya.OrdinalDate.Component.DayOfYear as DayOfYear
 import Data.Date (Date, Year)
 import Data.Date as Date
 import Data.Enum (class Enum)
