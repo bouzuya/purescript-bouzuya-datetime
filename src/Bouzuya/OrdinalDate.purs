@@ -27,11 +27,13 @@ instance boundedOrdinalDate :: Bounded OrdinalDate where
 instance enumOrdinalDate :: Enum OrdinalDate where
   pred (OrdinalDate y doy) =
     if doy == bottom
-    then OrdinalDate <$> (Enum.pred y) <*> (pure (DayOfYear.lastDayOfYear y))
+    then
+      let py = Enum.pred y
+      in OrdinalDate <$> py <*> (DayOfYear.lastDayOfYear <$> py)
     else OrdinalDate y <$> (Enum.pred doy)
   succ (OrdinalDate y doy) =
     if doy == DayOfYear.lastDayOfYear y
-    then OrdinalDate <$> (Enum.succ y) <*> bottom
+    then OrdinalDate <$> (Enum.succ y) <*> (pure bottom)
     else OrdinalDate y <$> (Enum.succ doy)
 
 derive instance eqOrdinalDate :: Eq OrdinalDate
