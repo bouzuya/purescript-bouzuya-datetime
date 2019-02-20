@@ -16,7 +16,7 @@ import Data.Enum as Enum
 import Data.Maybe (Maybe)
 import Data.Maybe as Maybe
 import Partial.Unsafe as Unsafe
-import Prelude (class Bounded, class Eq, class Ord, class Show, bottom, map, pure, show, top, (<$>), (<*>), (<>), (==))
+import Prelude (class Bounded, class Eq, class Ord, class Show, bottom, map, show, top, (<$>), (<*>), (<>), (==))
 
 data OrdinalDate = OrdinalDate Year DayOfYear
 
@@ -26,14 +26,16 @@ instance boundedOrdinalDate :: Bounded OrdinalDate where
 
 instance enumOrdinalDate :: Enum OrdinalDate where
   pred (OrdinalDate y doy) =
-    if doy == bottom
+    if doy == DayOfYear.firstDayOfYear y
     then
       let py = Enum.pred y
       in OrdinalDate <$> py <*> (DayOfYear.lastDayOfYear <$> py)
     else OrdinalDate y <$> (Enum.pred doy)
   succ (OrdinalDate y doy) =
     if doy == DayOfYear.lastDayOfYear y
-    then OrdinalDate <$> (Enum.succ y) <*> (pure bottom)
+    then
+      let ny = Enum.succ y
+      in OrdinalDate <$> ny <*> (DayOfYear.firstDayOfYear <$> ny)
     else OrdinalDate y <$> (Enum.succ doy)
 
 derive instance eqOrdinalDate :: Eq OrdinalDate
