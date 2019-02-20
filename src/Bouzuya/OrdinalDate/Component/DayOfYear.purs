@@ -1,13 +1,12 @@
 module Bouzuya.OrdinalDate.Component.DayOfYear
   ( DayOfYear
-  , canonicalDateFromDayOfYear
   , dayOfYear
   , exactDateFromDayOfYear
   , lastDayOfYear
   ) where
 
 import Data.Date (Date, Day, Month(..), Year, diff, exactDate, isLeapYear, lastDayOfMonth, year)
-import Data.Enum (class BoundedEnum, class Enum, Cardinality(..), enumFromTo, fromEnum, succ, toEnum)
+import Data.Enum (class BoundedEnum, class Enum, Cardinality(..), enumFromTo, fromEnum, toEnum)
 import Data.Foldable (foldl)
 import Data.Int as Int
 import Data.Maybe (Maybe(..), fromJust)
@@ -39,16 +38,6 @@ instance enumDayOfYear :: Enum DayOfYear where
 
 instance showDayOfYear :: Show DayOfYear where
   show (DayOfYear n) = "(DayOfYear " <> show n <> ")"
-
-canonicalDateFromDayOfYear :: Year -> DayOfYear -> Date
-canonicalDateFromDayOfYear y d =
-  case exactDateFromDayOfYear y d of
-    Just dt -> dt
-    Nothing ->
-      unsafeDate
-        (unsafePartial (fromJust (succ y))) -- overflow ?
-        January
-        (unsafeDay 1)
 
 dayOfYear :: Date -> DayOfYear
 dayOfYear d =
