@@ -11,14 +11,32 @@ import Bouzuya.DateTime (DayOfYear)
 import Bouzuya.DateTime.Component.DayOfYear as DayOfYear
 import Data.Date (Date, Year)
 import Data.Date as Date
+import Data.Enum (class Enum)
+import Data.Enum as Enum
 import Data.Maybe (Maybe)
 import Data.Maybe as Maybe
 import Partial.Unsafe as Unsafe
-import Prelude (class Eq, class Show, map, show, (<>))
+import Prelude (class Bounded, class Eq, class Ord, class Show, bottom, map, pure, show, top, (<$>), (<*>), (<>), (==))
 
 data OrdinalDate = OrdinalDate Year DayOfYear
 
+instance boundedOrdinalDate :: Bounded OrdinalDate where
+  bottom = OrdinalDate bottom bottom
+  top = OrdinalDate top (DayOfYear.lastDayOfYear top)
+
+instance enumOrdinalDate :: Enum OrdinalDate where
+  pred (OrdinalDate y doy) =
+    if doy == bottom
+    then OrdinalDate <$> (Enum.pred y) <*> (pure (DayOfYear.lastDayOfYear y))
+    else OrdinalDate y <$> (Enum.pred doy)
+  succ (OrdinalDate y doy) =
+    if doy == DayOfYear.lastDayOfYear y
+    then OrdinalDate <$> (Enum.succ y) <*> bottom
+    else OrdinalDate y <$> (Enum.succ doy)
+
 derive instance eqOrdinalDate :: Eq OrdinalDate
+
+derive instance ordOrdinalDate :: Ord OrdinalDate
 
 instance showOrdinalDate :: Show OrdinalDate where
   show (OrdinalDate y doy) = "(OrdinalDate " <> show y <> " " <> show doy <> ")"

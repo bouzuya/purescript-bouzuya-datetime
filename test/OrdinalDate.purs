@@ -2,14 +2,40 @@ module Test.OrdinalDate
   ( tests
   ) where
 
+import Bouzuya.OrdinalDate (OrdinalDate)
 import Bouzuya.OrdinalDate as OrdinalDate
+import Data.Enum as Enum
 import Data.Maybe (Maybe(..))
-import Prelude (bottom, discard, map, top)
+import Prelude (bottom, discard, map, pure, top, unit, (&&), (<), (<$>), (<*>))
 import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 
 tests :: TestSuite
 tests = suite "Bouzuya.OrdinalDate" do
+  test "Bounded OrdinalDate" do
+    Assert.equal (OrdinalDate.fromDate bottom) bottom
+    Assert.equal (OrdinalDate.fromDate top) top
+
+  test "Enum OrdinalDate" do
+    Assert.equal Nothing (Enum.pred bottom :: Maybe OrdinalDate)
+    Assert.equal Nothing (Enum.succ top :: Maybe OrdinalDate)
+    -- TODO
+
+  test "Eq OrdinalDate" do -- This has been tested in other tests
+    pure unit
+
+  test "Ord OrdinalDate" do
+    let
+      y1 = Enum.toEnum 2000
+      y2 = Enum.toEnum 2001
+      doy1 = Enum.toEnum 1
+      doy2 = Enum.toEnum 2
+      od1 = OrdinalDate.ordinalDate <$> y1 <*> doy1 -- 2000-001
+      od2 = OrdinalDate.ordinalDate <$> y1 <*> doy2 -- 2000-002
+      od3 = OrdinalDate.ordinalDate <$> y2 <*> doy1 -- 2001-001
+      od4 = OrdinalDate.ordinalDate <$> y2 <*> doy2 -- 2001-002
+    Assert.assert "od1 < od2 < od3 < od4" (od1 < od2 && od2 < od3 && od3 < od4)
+
   test "dayOfYear" do
     let o1 = OrdinalDate.ordinalDate bottom bottom
     Assert.equal (Just bottom) (map OrdinalDate.dayOfYear o1)
