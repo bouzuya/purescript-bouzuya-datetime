@@ -1,7 +1,9 @@
 module Bouzuya.OrdinalDate
   ( OrdinalDate
+  , dayOfYear
   , fromDate
   , ordinalDate
+  , year
   , toDate
   ) where
 
@@ -21,6 +23,9 @@ derive instance eqOrdinalDate :: Eq OrdinalDate
 instance showOrdinalDate :: Show OrdinalDate where
   show (OrdinalDate y doy) = "(OrdinalDate " <> show y <> " " <> show doy <> ")"
 
+dayOfYear :: OrdinalDate -> DayOfYear
+dayOfYear (OrdinalDate _ doy) = doy
+
 fromDate :: Date -> OrdinalDate
 fromDate d = OrdinalDate (Date.year d) (DayOfYear.dayOfYear d)
 
@@ -33,3 +38,6 @@ toDate (OrdinalDate y doy) =
   Unsafe.unsafePartial
     (Maybe.fromJust
       (DayOfYear.exactDateFromDayOfYear y doy))
+
+year :: OrdinalDate -> Year
+year (OrdinalDate y _) = y
