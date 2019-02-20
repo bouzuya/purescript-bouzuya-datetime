@@ -2,6 +2,7 @@ module Bouzuya.OrdinalDate.Component.DayOfYear
   ( DayOfYear
   , dayOfYear
   , exactDateFromDayOfYear
+  , firstDayOfYear
   , lastDayOfYear
   ) where
 
@@ -67,6 +68,9 @@ exactDateFromDayOfYear  y d@(DayOfYear n)
                   s')
         (Tuple Nothing n)
         (enumFromTo January December :: Array Month))
+
+firstDayOfYear :: Year -> DayOfYear
+firstDayOfYear _ = bottom
 
 lastDayOfYear :: Year -> DayOfYear
 lastDayOfYear y
