@@ -3,12 +3,27 @@ module Test.Bouzuya.WeekDate
   ) where
 
 import Bouzuya.WeekDate as WeekDate
-import Prelude (bottom, discard, top)
+import Data.Date as Date
+import Data.Enum as Enum
+import Prelude (bind, bottom, discard, top, (<$>), (>>=))
 import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 
 tests :: TestSuite
 tests = suite "Bouzuya.WeekDate" do
   test "fromDate / toDate" do
-    Assert.equal bottom (WeekDate.toDate (WeekDate.fromDate bottom))
-    Assert.equal top (WeekDate.toDate (WeekDate.fromDate top))
+    let
+      d1 = do
+        y <- Enum.succ bottom
+        m <- bottom
+        d <- bottom
+        Date.exactDate y m d
+      d2 = do
+        y <- Enum.pred top
+        m <- top
+        d <- top
+        Date.exactDate y m d
+    Assert.equal d1 (WeekDate.toDate <$> (d1 >>= WeekDate.fromDate))
+    Assert.equal d2 (WeekDate.toDate <$> (d2 >>= WeekDate.fromDate))
+    -- Assert.equal Nothing (WeekDate.toDate <$> (WeekDate.fromDate bottom))
+    -- Assert.equal Nothing (WeekDate.toDate <$> (WeekDate.fromDate top))
