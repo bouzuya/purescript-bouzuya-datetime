@@ -7,6 +7,7 @@ module Bouzuya.OrdinalDate
   , toDate
   ) where
 
+import Bouzuya.Date.Extra as DateExtra
 import Bouzuya.OrdinalDate.Component.DayOfYear (DayOfYear)
 import Bouzuya.OrdinalDate.Component.DayOfYear as DayOfYear
 import Data.Array as Array
@@ -55,7 +56,7 @@ dayOfYear (OrdinalDate _ doy) = doy
 dayOfYearFromDate :: Date -> DayOfYear
 dayOfYearFromDate d =
   let
-    (Days n) = Date.diff d (firstDateOfYear (Date.year d))
+    (Days n) = Date.diff d (DateExtra.firstDateOfYear (Date.year d))
     doy = (Int.fromNumber n) >>= Enum.succ >>= Enum.toEnum
   in Unsafe.unsafePartial (Maybe.fromJust doy)
 
@@ -79,10 +80,6 @@ exactDateFromDayOfYear y doy
                   (Enum.fromEnum <<< (Date.lastDayOfMonth y'))
                   ((Enum.enumFromTo bottom m') :: Array Month)))
             (Enum.pred m)
-
-firstDateOfYear :: Year -> Date
-firstDateOfYear y =
-  Unsafe.unsafePartial (Maybe.fromJust (Date.exactDate y bottom bottom))
 
 fromDate :: Date -> OrdinalDate
 fromDate d = OrdinalDate (Date.year d) (dayOfYearFromDate d)

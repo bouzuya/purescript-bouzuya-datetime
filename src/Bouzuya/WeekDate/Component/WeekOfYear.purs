@@ -9,6 +9,7 @@ module Bouzuya.WeekDate.Component.WeekOfYear
   , weekYear
   ) where
 
+import Bouzuya.Date.Extra as DateExtra
 import Bouzuya.OrdinalDate as OrdinalDate
 import Data.Date (Date, Weekday(..), Year, exactDate, isLeapYear, weekday, year)
 import Data.Enum (class BoundedEnum, class Enum, Cardinality(..), fromEnum, pred, succ, toEnum)
@@ -55,17 +56,11 @@ exactDateFromWeekOfYear wy woy w
     let wd = WeekDate wy woy w
     in pure (toDate wd)
 
-firstDateOfYear :: Year -> Date
-firstDateOfYear y = unsafePartial (fromJust (exactDate y bottom bottom))
-
 firstWeekOfYear :: Year -> WeekOfYear
 firstWeekOfYear _ = bottom
 
 firstWeekdayOfYear :: Year -> Weekday
-firstWeekdayOfYear y = weekday (firstDateOfYear y)
-
-lastDateOfYear :: Year -> Date
-lastDateOfYear y = unsafePartial (fromJust (exactDate y top top))
+firstWeekdayOfYear y = weekday (DateExtra.firstDateOfYear y)
 
 lastWeekOfYear :: Year -> WeekOfYear
 lastWeekOfYear y =
@@ -76,7 +71,7 @@ lastWeekOfYear y =
     if isLongYear then longYearLastWeekOfYear else shortYearLastWeekOfYear
 
 lastWeekdayOfYear :: Year -> Weekday
-lastWeekdayOfYear y = weekday (lastDateOfYear y)
+lastWeekdayOfYear y = weekday (DateExtra.lastDateOfYear y)
 
 toDate :: WeekDate -> Date
 toDate (WeekDate y (WeekOfYear w) d) =
