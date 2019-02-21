@@ -1,6 +1,6 @@
-module Test.WeekOfYear (tests) where
+module Test.Bouzuya.WeekDate.Component.WeekOfYear (tests) where
 
-import Bouzuya.DateTime.Component.WeekOfYear (exactDateFromWeekOfYear, firstWeekOfYear, firstWeekdayOfYear, lastWeekOfYear, lastWeekdayOfYear, weekOfYear, weekYear)
+import Bouzuya.WeekDate.Component.WeekOfYear (exactDateFromWeekOfYear, firstWeekOfYear, firstWeekdayOfYear, lastWeekOfYear, lastWeekdayOfYear, weekOfYear, weekYear)
 import Data.DateTime (Weekday(..), exactDate, weekday)
 import Data.Enum (toEnum)
 import Data.Foldable (for_)
@@ -13,7 +13,7 @@ import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 
 tests :: TestSuite
-tests = suite "Bouzuya.DateTime.Component.WeekOfYear" do
+tests = suite "Bouzuya.WeekDate.Component.WeekOfYear" do
   let
     unsafeYear y =
       let yearMaybe = toEnum y

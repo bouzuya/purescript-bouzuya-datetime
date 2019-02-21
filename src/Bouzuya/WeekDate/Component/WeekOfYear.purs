@@ -1,4 +1,4 @@
-module Bouzuya.DateTime.Component.WeekOfYear
+module Bouzuya.WeekDate.Component.WeekOfYear
   ( WeekOfYear
   , exactDateFromWeekOfYear
   , firstWeekOfYear
