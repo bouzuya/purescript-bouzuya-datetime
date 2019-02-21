@@ -14,6 +14,7 @@ import Bouzuya.OrdinalDate.Component.DayOfYear as DayOfYear
 import Bouzuya.WeekDate.Component.Week (Week)
 import Bouzuya.WeekDate.Component.Week as Week
 import Bouzuya.WeekDate.Component.WeekYear (WeekYear)
+import Bouzuya.WeekDate.Extra as WeekDateExtra
 import Data.Date (Date, Month(..), Weekday(..), Year)
 import Data.Date as Date
 import Data.Enum (class BoundedEnum, class Enum)
@@ -119,7 +120,7 @@ toDate (WeekDate wy woy wday) =
       Unsafe.unsafePartial
         (Maybe.fromJust (Enum.toEnum (Enum.fromEnum wy))) -- FIXME
     w = Enum.fromEnum woy
-    dayOfYearOffset = case Week.firstWeekdayOfYear y of
+    dayOfYearOffset = case WeekDateExtra.firstWeekdayOfYear y of
       Monday -> 0
       Tuesday -> -1
       Wednesday -> -2

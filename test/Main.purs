@@ -7,6 +7,7 @@ import Test.Bouzuya.OrdinalDate.Component.DayOfYear as OrdinalDateComponentDayOf
 import Test.Bouzuya.WeekDate as WeekDate
 import Test.Bouzuya.WeekDate.Component.Week as WeekDateComponentWeek
 import Test.Bouzuya.WeekDate.Component.WeekYear as WeekDateComponentWeekYear
+import Test.Bouzuya.WeekDate.Extra as WeekDateExtra
 import Test.Unit.Main (runTest)
 
 main :: Effect Unit
@@ -16,3 +17,4 @@ main = runTest do
   WeekDate.tests
   WeekDateComponentWeek.tests
   WeekDateComponentWeekYear.tests
+  WeekDateExtra.tests

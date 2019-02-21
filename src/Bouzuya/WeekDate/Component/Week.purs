@@ -1,15 +1,13 @@
 module Bouzuya.WeekDate.Component.Week
   ( Week
   , firstWeekOfYear
-  , firstWeekdayOfYear
   , lastWeekOfYear
-  , lastWeekdayOfYear
   , week
   , weekYear
   ) where
 
-import Bouzuya.Date.Extra as DateExtra
 import Bouzuya.OrdinalDate as OrdinalDate
+import Bouzuya.WeekDate.Extra as WeekDateExtra
 import Data.Date (Date, Weekday(..), Year, exactDate, isLeapYear, weekday, year)
 import Data.Enum (class BoundedEnum, class Enum, Cardinality(..), fromEnum, pred, succ, toEnum)
 import Data.Maybe (Maybe(..), fromJust)
@@ -51,24 +49,18 @@ instance showWeek :: Show Week where
 firstWeekOfYear :: Year -> Week
 firstWeekOfYear _ = bottom
 
-firstWeekdayOfYear :: Year -> Weekday
-firstWeekdayOfYear y = weekday (DateExtra.firstDateOfYear y)
-
 lastWeekOfYear :: Year -> Week
 lastWeekOfYear y =
   let
-    w = firstWeekdayOfYear y
+    w = WeekDateExtra.firstWeekdayOfYear y
     isLongYear = (w == Thursday) || (w == Wednesday && isLeapYear y)
   in
     if isLongYear then longYearLastWeek else shortYearLastWeek
 
-lastWeekdayOfYear :: Year -> Weekday
-lastWeekdayOfYear y = weekday (DateExtra.lastDateOfYear y)
-
 toDate :: WeekDate -> Date
 toDate (WeekDate y (Week w) d) =
   let
-    dayOfYearOffset = case firstWeekdayOfYear y of
+    dayOfYearOffset = case WeekDateExtra.firstWeekdayOfYear y of
       Monday -> 0
       Tuesday -> -1
       Wednesday -> -2

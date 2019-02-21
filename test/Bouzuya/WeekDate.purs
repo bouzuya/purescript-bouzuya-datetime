@@ -7,8 +7,8 @@ import Bouzuya.OrdinalDate.Component.DayOfYear as DayOfYear
 import Bouzuya.WeekDate (WeekDate)
 import Bouzuya.WeekDate as WeekDate
 import Bouzuya.WeekDate.Component.Week (Week)
-import Bouzuya.WeekDate.Component.Week as Week
 import Bouzuya.WeekDate.Component.WeekYear (WeekYear)
+import Bouzuya.WeekDate.Extra as WeekDateExtra
 import Data.Date (Date, Weekday(..))
 import Data.Date as Date
 import Data.Enum as Enum
@@ -136,7 +136,7 @@ tests = suite "Bouzuya.WeekDate" do
         (\s w y o m d -> do
           Assert.equal
             (Enum.toEnum w)
-            (Week.firstWeekdayOfYear <$> Enum.toEnum y)
+            (WeekDateExtra.firstWeekdayOfYear <$> Enum.toEnum y)
           Assert.equal'
             s
             (join (Date.exactDate <$> Enum.toEnum (y - o) <*> Enum.toEnum m <*> Enum.toEnum d))

@@ -1,14 +1,14 @@
 module Test.Bouzuya.WeekDate.Component.Week (tests) where
 
-import Bouzuya.WeekDate.Component.Week (firstWeekOfYear, firstWeekdayOfYear, lastWeekOfYear, lastWeekdayOfYear, week, weekYear)
-import Data.DateTime (Weekday(..), exactDate, weekday)
-import Data.Enum (toEnum)
-import Data.Foldable (for_)
-import Data.Maybe (Maybe(..), fromJust)
+import Bouzuya.WeekDate.Component.Week (Week, firstWeekOfYear, lastWeekOfYear, week, weekYear)
+import Data.Date (Year)
+import Data.Date as Date
+import Data.Enum as Enum
+import Data.Foldable as Foldable
+import Data.Maybe as Maybe
 import Data.Tuple (Tuple(..))
-import Data.Tuple.Nested (tuple6, uncurry6)
-import Partial.Unsafe (unsafePartial)
-import Prelude (bottom, discard, join, (-), (<$>), (<*>), (>>=))
+import Partial.Unsafe as Unsafe
+import Prelude (bind, discard)
 import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 
@@ -16,24 +16,23 @@ tests :: TestSuite
 tests = suite "Bouzuya.WeekDate.Component.Week" do
   let
     unsafeYear y =
-      let yearMaybe = toEnum y
-      in unsafePartial (fromJust yearMaybe)
+      let yearMaybe = Enum.toEnum y :: _ Year
+      in Unsafe.unsafePartial (Maybe.fromJust yearMaybe)
     unsafeDate y m d =
-      let dateMaybe = join (exactDate <$> (toEnum y) <*> (toEnum m) <*> (toEnum d))
-      in unsafePartial (fromJust dateMaybe)
+      let
+        dateMaybe = do
+          y' <- Enum.toEnum y
+          m' <- Enum.toEnum m
+          d' <- Enum.toEnum d
+          Date.exactDate y' m' d'
+      in Unsafe.unsafePartial (Maybe.fromJust dateMaybe)
     unsafeWeek w =
-      let weekMaybe = toEnum w
-      in unsafePartial (fromJust weekMaybe)
+      let weekMaybe = Enum.toEnum w :: _ Week
+      in Unsafe.unsafePartial (Maybe.fromJust weekMaybe)
   test "firstWeekOfYear" do
     Assert.equal (unsafeWeek 1) (firstWeekOfYear (unsafeYear 2018))
-  test "firstWeekdayOfYear" do
-    Assert.equal Saturday (firstWeekdayOfYear (unsafeYear 2000))
-    Assert.equal Thursday (firstWeekdayOfYear (unsafeYear 2004))
-    Assert.equal Thursday (firstWeekdayOfYear (unsafeYear 2015))
-    Assert.equal Monday (firstWeekdayOfYear (unsafeYear 2018))
-    Assert.equal Wednesday (firstWeekdayOfYear (unsafeYear 2020))
   test "lastWeekOfYear" do
-    for_
+    Foldable.for_
       [ Tuple 52 2000 -- leap year & Sat
       , Tuple 53 2004 -- leap year & *Thu*
       , Tuple 53 2015 -- not leap year & *Thu*
@@ -41,9 +40,6 @@ tests = suite "Bouzuya.WeekDate.Component.Week" do
       , Tuple 53 2020 -- *leap year* & *Wed*
       ]
       \(Tuple w y) -> Assert.equal (unsafeWeek w) (lastWeekOfYear (unsafeYear y))
-  test "lastWeekdayOfYear" do
-    Assert.equal (weekday (unsafeDate 2000 12 31)) (lastWeekdayOfYear (unsafeYear 2000)) -- leap year && Sat
-    Assert.equal (weekday (unsafeDate 2015 12 31)) (firstWeekdayOfYear (unsafeYear 2015)) -- not leap year && Thu
   test "week" do
     -- --01-04/--12-28
     Assert.equal (unsafeWeek 1) (week (unsafeDate 2004 1 4))
