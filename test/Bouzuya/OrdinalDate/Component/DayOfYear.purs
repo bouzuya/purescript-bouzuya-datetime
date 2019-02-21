@@ -1,4 +1,4 @@
-module Test.OrdinalDate.Component.DayOfYear (tests) where
+module Test.Bouzuya.OrdinalDate.Component.DayOfYear (tests) where
 
 import Bouzuya.OrdinalDate.Component.DayOfYear (firstDayOfYear, lastDayOfYear)
 import Data.Enum (toEnum)
@@ -9,7 +9,7 @@ import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 
 tests :: TestSuite
-tests = suite "Bouzuya.DateTime.Component.DayOfYear" do
+tests = suite "Bouzuya.OrdinalDate.Component.DayOfYear" do
   let
     year2018 = (unsafePartial (fromJust (toEnum 2018)))
     year2020 = (unsafePartial (fromJust (toEnum 2020)))

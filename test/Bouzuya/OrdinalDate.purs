@@ -1,4 +1,4 @@
-module Test.OrdinalDate
+module Test.Bouzuya.OrdinalDate
   ( tests
   ) where
 
