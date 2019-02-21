@@ -1,6 +1,6 @@
 module Test.Bouzuya.WeekDate.Component.Week (tests) where
 
-import Bouzuya.WeekDate.Component.Week (exactDateFromWeek, firstWeekOfYear, firstWeekdayOfYear, lastWeekOfYear, lastWeekdayOfYear, week, weekYear)
+import Bouzuya.WeekDate.Component.Week (firstWeekOfYear, firstWeekdayOfYear, lastWeekOfYear, lastWeekdayOfYear, week, weekYear)
 import Data.DateTime (Weekday(..), exactDate, weekday)
 import Data.Enum (toEnum)
 import Data.Foldable (for_)
@@ -24,59 +24,6 @@ tests = suite "Bouzuya.WeekDate.Component.Week" do
     unsafeWeek w =
       let weekMaybe = toEnum w
       in unsafePartial (fromJust weekMaybe)
-  test "exactDateFromWeek (firstWeekdayOfYear)" do
-    for_
-      [ tuple6 "Mon YYYY-W01-1 = YYYY-01-01" 1 2018 0 1 1
-      , tuple6 "Tue YYYY-W01-1 = YYYY-12-31" 2 2019 1 12 31
-      , tuple6 "Wed YYYY-W01-1 = YYYY-12-30" 3 2020 1 12 30
-      , tuple6 "Thu YYYY-W01-1 = YYYY-12-29" 4 2026 1 12 29
-      , tuple6 "Fri YYYY-W01-1 = YYYY-01-04" 5 2021 0 1 4
-      , tuple6 "Sat YYYY-W01-1 = YYYY-01-03" 6 2022 0 1 3
-      , tuple6 "Sun YYYY-W01-1 = YYYY-01-02" 7 2023 0 1 2
-      ]
-      (uncurry6
-        (\s w y o m d -> do
-          Assert.equal (toEnum w) (firstWeekdayOfYear <$> toEnum y)
-          Assert.equal'
-            s
-            (join (exactDate <$> toEnum (y - o) <*> toEnum m <*> toEnum d))
-            (toEnum y >>= \y' -> exactDateFromWeek y' bottom bottom)))
-  test "exactDateFromWeek" do
-    -- --01-04/--12-28
-    Assert.equal (Just (unsafeDate 2004 1 4)) (exactDateFromWeek (unsafeYear 2004) (unsafeWeek 1) Sunday)
-    Assert.equal (Just (unsafeDate 2004 1 5)) (exactDateFromWeek (unsafeYear 2004) (unsafeWeek 2) Monday)
-    Assert.equal (Just (unsafeDate 2004 12 27)) (exactDateFromWeek (unsafeYear 2004) (unsafeWeek 53) Monday)
-    Assert.equal (Just (unsafeDate 2004 12 28)) (exactDateFromWeek (unsafeYear 2004) (unsafeWeek 53) Tuesday)
-    -- Mon -> 1 Curr
-    Assert.equal (Just (unsafeDate 2000 12 31)) (exactDateFromWeek (unsafeYear 2000) (unsafeWeek 52) Sunday)
-    Assert.equal (Just (unsafeDate 2001 1 1)) (exactDateFromWeek (unsafeYear 2001) (unsafeWeek 1) Monday)
-    -- Tue -> 1 Curr
-    Assert.equal (Just (unsafeDate 2001 12 30)) (exactDateFromWeek (unsafeYear 2001) (unsafeWeek 52) Sunday)
-    Assert.equal (Just (unsafeDate 2001 12 31)) (exactDateFromWeek (unsafeYear 2002) (unsafeWeek 1) Monday)
-    Assert.equal (Just (unsafeDate 2002 1 1)) (exactDateFromWeek (unsafeYear 2002) (unsafeWeek 1) Tuesday)
-    -- Wed -> 1 Curr
-    Assert.equal (Just (unsafeDate 2002 12 29)) (exactDateFromWeek (unsafeYear 2002) (unsafeWeek 52) Sunday)
-    Assert.equal (Just (unsafeDate 2002 12 31)) (exactDateFromWeek (unsafeYear 2003) (unsafeWeek 1) Tuesday)
-    Assert.equal (Just (unsafeDate 2003 1 1)) (exactDateFromWeek (unsafeYear 2003) (unsafeWeek 1) Wednesday)
-    -- Thu -> 1 Curr
-    Assert.equal (Just (unsafeDate 2003 12 28)) (exactDateFromWeek (unsafeYear 2003) (unsafeWeek 52) Sunday)
-    Assert.equal (Just (unsafeDate 2003 12 31)) (exactDateFromWeek (unsafeYear 2004) (unsafeWeek 1) Wednesday)
-    Assert.equal (Just (unsafeDate 2004 1 1)) (exactDateFromWeek (unsafeYear 2004) (unsafeWeek 1) Thursday)
-    -- Fri -> 53 Prev
-    Assert.equal (Just (unsafeDate 2009 12 31)) (exactDateFromWeek (unsafeYear 2009) (unsafeWeek 53) Thursday)
-    Assert.equal (Just (unsafeDate 2010 1 1)) (exactDateFromWeek (unsafeYear 2009) (unsafeWeek 53) Friday)
-    Assert.equal (Just (unsafeDate 2010 1 4)) (exactDateFromWeek (unsafeYear 2010) (unsafeWeek 1) Monday)
-    -- Sat -> 53 Prev (prev year is leap year)
-    Assert.equal (Just (unsafeDate 2004 12 31)) (exactDateFromWeek (unsafeYear 2004) (unsafeWeek 53) Friday)
-    Assert.equal (Just (unsafeDate 2005 1 1)) (exactDateFromWeek (unsafeYear 2004) (unsafeWeek 53) Saturday)
-    Assert.equal (Just (unsafeDate 2005 1 3)) (exactDateFromWeek (unsafeYear 2005) (unsafeWeek 1) Monday)
-    -- Sat -> 52 Prev (prev year is not leap year)
-    Assert.equal (Just (unsafeDate 1999 12 31)) (exactDateFromWeek (unsafeYear 1999) (unsafeWeek 52) Friday)
-    Assert.equal (Just (unsafeDate 2000 1 1)) (exactDateFromWeek (unsafeYear 1999) (unsafeWeek 52) Saturday)
-    Assert.equal (Just (unsafeDate 2000 1 3)) (exactDateFromWeek (unsafeYear 2000) (unsafeWeek 1) Monday)
-    -- Sun -> 52 Prev
-    Assert.equal (Just (unsafeDate 2005 12 31)) (exactDateFromWeek (unsafeYear 2005) (unsafeWeek 52) Saturday)
-    Assert.equal (Just (unsafeDate 2006 1 1)) (exactDateFromWeek (unsafeYear 2005)  (unsafeWeek 52) Sunday)
   test "firstWeekOfYear" do
     Assert.equal (unsafeWeek 1) (firstWeekOfYear (unsafeYear 2018))
   test "firstWeekdayOfYear" do

@@ -1,6 +1,5 @@
 module Bouzuya.WeekDate.Component.Week
   ( Week
-  , exactDateFromWeek
   , firstWeekOfYear
   , firstWeekdayOfYear
   , lastWeekOfYear
@@ -48,13 +47,6 @@ instance enumWeek :: Enum Week where
 
 instance showWeek :: Show Week where
   show (Week n) = "(Week " <> show n <> ")"
-
-exactDateFromWeek :: Year -> Week -> Weekday -> Maybe Date
-exactDateFromWeek wy woy w
-  | lastWeekOfYear wy < woy = Nothing
-  | otherwise =
-    let wd = WeekDate wy woy w
-    in pure (toDate wd)
 
 firstWeekOfYear :: Year -> Week
 firstWeekOfYear _ = bottom

@@ -3,6 +3,7 @@ module Bouzuya.WeekDate
   , fromDate
   , toDate
   , week
+  , weekDate
   , weekYear
   , weekday
   ) where
@@ -17,7 +18,7 @@ import Data.Date (Date, Month(..), Weekday(..), Year)
 import Data.Date as Date
 import Data.Enum (class BoundedEnum, class Enum)
 import Data.Enum as Enum
-import Data.Maybe (Maybe)
+import Data.Maybe (Maybe(..))
 import Data.Maybe as Maybe
 import Partial.Unsafe as Unsafe
 import Prelude (class Bounded, class Eq, class Ord, class Show, bind, bottom, identity, negate, otherwise, pure, show, top, (&&), (*), (+), (-), (/), (/=), (<), (<$>), (<*>), (<<<), (<=), (<>), (==), (>), (>>=))
@@ -148,6 +149,11 @@ toDate (WeekDate wy woy wday) =
 
 week :: WeekDate -> Week
 week (WeekDate _ w _) = w
+
+weekDate :: WeekYear -> Week -> Weekday -> Maybe WeekDate
+weekDate wy w wday
+  | w > lastWeekOfWeekYear wy = Nothing
+  | otherwise = Just (WeekDate wy w wday)
 
 weekYear :: WeekDate -> WeekYear
 weekYear (WeekDate wy _ _) = wy
