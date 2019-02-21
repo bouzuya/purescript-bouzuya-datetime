@@ -68,7 +68,12 @@ tests = suite "Bouzuya.OrdinalDate" do
     Assert.equal
       (Just (OrdinalDate.fromDate bottom))
       (OrdinalDate.ordinalDate bottom bottom)
-    -- top :: DayOfYear is out of range ?
+    Assert.equal
+      Nothing
+      (OrdinalDate.ordinalDate top top) -- top :: Year is not leap year
+    Assert.equal
+      (Just (OrdinalDate.fromDate top))
+      ((OrdinalDate.ordinalDate top) <$> (Enum.pred top) >>= identity)
     let
       d20181231 = do
         y <- Enum.toEnum 2018
