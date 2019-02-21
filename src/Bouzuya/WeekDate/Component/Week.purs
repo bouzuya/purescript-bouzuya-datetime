@@ -1,11 +1,11 @@
-module Bouzuya.WeekDate.Component.WeekOfYear
-  ( WeekOfYear
-  , exactDateFromWeekOfYear
+module Bouzuya.WeekDate.Component.Week
+  ( Week
+  , exactDateFromWeek
   , firstWeekOfYear
   , firstWeekdayOfYear
   , lastWeekOfYear
   , lastWeekdayOfYear
-  , weekOfYear
+  , week
   , weekYear
   ) where
 
@@ -17,64 +17,64 @@ import Data.Maybe (Maybe(..), fromJust)
 import Partial.Unsafe (unsafePartial)
 import Prelude (class Bounded, class Eq, class Ord, class Show, bind, bottom, identity, join, negate, otherwise, pure, show, top, (&&), (*), (+), (-), (/), (<), (<$>), (<*>), (<<<), (<=), (<>), (==), (>), (>>=), (||))
 
-data WeekDate = WeekDate Year WeekOfYear Weekday
+data WeekDate = WeekDate Year Week Weekday
 
-newtype WeekOfYear = WeekOfYear Int
+newtype Week = Week Int
 
-derive newtype instance eqWeekOfYear :: Eq WeekOfYear
+derive newtype instance eqWeek :: Eq Week
 
-derive newtype instance ordWeekOfYear :: Ord WeekOfYear
+derive newtype instance ordWeek :: Ord Week
 
-longYearLastWeekOfYear :: WeekOfYear
-longYearLastWeekOfYear = WeekOfYear 53
+longYearLastWeek :: Week
+longYearLastWeek = Week 53
 
-shortYearLastWeekOfYear :: WeekOfYear
-shortYearLastWeekOfYear = WeekOfYear 52
+shortYearLastWeek :: Week
+shortYearLastWeek = Week 52
 
-instance boundedWeekOfYear :: Bounded WeekOfYear where
-  bottom = WeekOfYear 1
-  top = longYearLastWeekOfYear
+instance boundedWeek :: Bounded Week where
+  bottom = Week 1
+  top = longYearLastWeek
 
-instance boundedEnumWeekOfYear :: BoundedEnum WeekOfYear where
+instance boundedEnumWeek :: BoundedEnum Week where
   cardinality = Cardinality 53
   toEnum n
-    | 1 <= n && n <= 53 = Just (WeekOfYear n)
+    | 1 <= n && n <= 53 = Just (Week n)
     | otherwise = Nothing
-  fromEnum (WeekOfYear n) = n
+  fromEnum (Week n) = n
 
-instance enumWeekOfYear :: Enum WeekOfYear where
+instance enumWeek :: Enum Week where
   succ = toEnum <<< (_ + 1) <<< fromEnum
   pred = toEnum <<< (_ - 1) <<< fromEnum
 
-instance showWeekOfYear :: Show WeekOfYear where
-  show (WeekOfYear n) = "(WeekOfYear " <> show n <> ")"
+instance showWeek :: Show Week where
+  show (Week n) = "(Week " <> show n <> ")"
 
-exactDateFromWeekOfYear :: Year -> WeekOfYear -> Weekday -> Maybe Date
-exactDateFromWeekOfYear wy woy w
+exactDateFromWeek :: Year -> Week -> Weekday -> Maybe Date
+exactDateFromWeek wy woy w
   | lastWeekOfYear wy < woy = Nothing
   | otherwise =
     let wd = WeekDate wy woy w
     in pure (toDate wd)
 
-firstWeekOfYear :: Year -> WeekOfYear
+firstWeekOfYear :: Year -> Week
 firstWeekOfYear _ = bottom
 
 firstWeekdayOfYear :: Year -> Weekday
 firstWeekdayOfYear y = weekday (DateExtra.firstDateOfYear y)
 
-lastWeekOfYear :: Year -> WeekOfYear
+lastWeekOfYear :: Year -> Week
 lastWeekOfYear y =
   let
     w = firstWeekdayOfYear y
     isLongYear = (w == Thursday) || (w == Wednesday && isLeapYear y)
   in
-    if isLongYear then longYearLastWeekOfYear else shortYearLastWeekOfYear
+    if isLongYear then longYearLastWeek else shortYearLastWeek
 
 lastWeekdayOfYear :: Year -> Weekday
 lastWeekdayOfYear y = weekday (DateExtra.lastDateOfYear y)
 
 toDate :: WeekDate -> Date
-toDate (WeekDate y (WeekOfYear w) d) =
+toDate (WeekDate y (Week w) d) =
   let
     dayOfYearOffset = case firstWeekdayOfYear y of
       Monday -> 0
@@ -120,11 +120,11 @@ toWeekDate d =
       let ny = unsafePartial (fromJust (succ y)) -- FIXME
       in WeekDate ny (firstWeekOfYear ny) w
     else
-      let woy = WeekOfYear (((fromEnum doy) + (fromEnum (weekday d0104)) - 4 - 1) / 7 + 1)
+      let woy = Week (((fromEnum doy) + (fromEnum (weekday d0104)) - 4 - 1) / 7 + 1)
       in WeekDate y woy w
 
-weekOfYear :: Date -> WeekOfYear
-weekOfYear d =
+week :: Date -> Week
+week d =
   let (WeekDate _ w _) = toWeekDate d
   in w
 

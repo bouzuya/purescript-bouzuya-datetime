@@ -96,7 +96,7 @@ tests = suite "Bouzuya.WeekDate" do
         d <- Date.exactDate y bottom bottom
         WeekDate.fromDate d
     Assert.equal
-      (Just "(WeekDate (WeekYear -271819) (WeekOfYear 1) Monday)")
+      (Just "(WeekDate (WeekYear -271819) (Week 1) Monday)")
       (show <$> wd)
 
   test "fromDate / toDate" do

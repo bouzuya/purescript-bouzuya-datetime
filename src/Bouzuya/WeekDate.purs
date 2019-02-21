@@ -10,8 +10,8 @@ module Bouzuya.WeekDate
 import Bouzuya.OrdinalDate (OrdinalDate)
 import Bouzuya.OrdinalDate as OrdinalDate
 import Bouzuya.OrdinalDate.Component.DayOfYear as DayOfYear
-import Bouzuya.WeekDate.Component.WeekOfYear (WeekOfYear)
-import Bouzuya.WeekDate.Component.WeekOfYear as WeekOfYear
+import Bouzuya.WeekDate.Component.Week (Week)
+import Bouzuya.WeekDate.Component.Week as Week
 import Bouzuya.WeekDate.Component.WeekYear (WeekYear)
 import Data.Date (Date, Month(..), Weekday(..), Year)
 import Data.Date as Date
@@ -22,7 +22,7 @@ import Data.Maybe as Maybe
 import Partial.Unsafe as Unsafe
 import Prelude (class Bounded, class Eq, class Ord, class Show, bind, bottom, identity, negate, otherwise, pure, show, top, (&&), (*), (+), (-), (/), (/=), (<), (<$>), (<*>), (<<<), (<=), (<>), (==), (>), (>>=))
 
-data WeekDate = WeekDate WeekYear WeekOfYear Weekday
+data WeekDate = WeekDate WeekYear Week Weekday
 
 instance boundedWeekDate :: Bounded WeekDate where
   bottom =
@@ -65,14 +65,14 @@ instance showWeekDate :: Show WeekDate where
   show (WeekDate wy w wday) =
     "(WeekDate " <> show wy <> " " <> show w <> " " <> show wday <> ")"
 
-firstWeekOfWeekYear :: WeekYear -> WeekOfYear
+firstWeekOfWeekYear :: WeekYear -> Week
 firstWeekOfWeekYear _ = bottom
 
-lastWeekOfWeekYear :: WeekYear -> WeekOfYear
+lastWeekOfWeekYear :: WeekYear -> Week
 lastWeekOfWeekYear wy =
   -- safe
   let y = Unsafe.unsafePartial (Maybe.fromJust (Enum.toEnum (Enum.fromEnum wy)))
-  in WeekOfYear.lastWeekOfYear y
+  in Week.lastWeekOfYear y
 
 fromDate :: Date -> Maybe WeekDate
 fromDate d = do
@@ -118,7 +118,7 @@ toDate (WeekDate wy woy wday) =
       Unsafe.unsafePartial
         (Maybe.fromJust (Enum.toEnum (Enum.fromEnum wy))) -- FIXME
     w = Enum.fromEnum woy
-    dayOfYearOffset = case WeekOfYear.firstWeekdayOfYear y of
+    dayOfYearOffset = case Week.firstWeekdayOfYear y of
       Monday -> 0
       Tuesday -> -1
       Wednesday -> -2
@@ -146,7 +146,7 @@ toDate (WeekDate wy woy wday) =
     dateMaybe = OrdinalDate.toDate <$> ordinalDateMaybe
   in Unsafe.unsafePartial (Maybe.fromJust dateMaybe)
 
-week :: WeekDate -> WeekOfYear
+week :: WeekDate -> Week
 week (WeekDate _ w _) = w
 
 weekYear :: WeekDate -> WeekYear
