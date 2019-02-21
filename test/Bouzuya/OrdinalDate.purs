@@ -2,13 +2,14 @@ module Test.Bouzuya.OrdinalDate
   ( tests
   ) where
 
+import Bouzuya.Date.Extra as DateExtra
 import Bouzuya.OrdinalDate (OrdinalDate)
 import Bouzuya.OrdinalDate as OrdinalDate
 import Bouzuya.OrdinalDate.Component.DayOfYear as DayOfYear
 import Data.Date as Date
 import Data.Enum as Enum
 import Data.Maybe (Maybe(..))
-import Prelude (bind, bottom, discard, identity, map, pure, top, unit, (&&), (<), (<$>), (<*>), (>>=))
+import Prelude (bind, bottom, discard, identity, map, pure, top, unit, (&&), (<), (<$>), (<*>), (<<<), (>>=))
 import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 
@@ -60,9 +61,52 @@ tests = suite "Bouzuya.OrdinalDate" do
     let o2 = OrdinalDate.ordinalDate bottom top -- dummy year
     Assert.equal (Just top) (map OrdinalDate.dayOfYear o2)
 
+  test "firstOrdinalDateOfYear" do
+    let y1 = Enum.toEnum 2000 -- is leap year
+    Assert.equal
+      (OrdinalDate.ordinalDate <$> y1 <*> (pure bottom) >>= identity)
+      (OrdinalDate.firstOrdinalDateOfYear <$> y1)
+    Assert.equal
+      ((OrdinalDate.fromDate <<< DateExtra.firstDateOfYear) <$> y1)
+      (OrdinalDate.firstOrdinalDateOfYear <$> y1)
+
   test "fromDate / toDate" do
     Assert.equal bottom (OrdinalDate.toDate (OrdinalDate.fromDate bottom))
     Assert.equal top (OrdinalDate.toDate (OrdinalDate.fromDate top))
+
+  test "lastOrdinalDateOfYear" do
+    let
+      y1 = Enum.toEnum 2000 -- is leap year
+      d20001231 = do
+        y <- Enum.toEnum 2000
+        m <- Enum.toEnum 12
+        d <- Enum.toEnum 31
+        Date.exactDate y m d
+    Assert.equal
+      (OrdinalDate.fromDate <$> d20001231)
+      (OrdinalDate.lastOrdinalDateOfYear <$> y1)
+    Assert.equal
+      ((OrdinalDate.fromDate <<< DateExtra.lastDateOfYear) <$> y1)
+      (OrdinalDate.lastOrdinalDateOfYear <$> y1)
+    Assert.equal
+      (Enum.toEnum 366)
+      (OrdinalDate.dayOfYear <$> OrdinalDate.lastOrdinalDateOfYear <$> y1)
+    let
+      y2 = Enum.toEnum 2001 -- is not leap year
+      d20011231 = do
+        y <- Enum.toEnum 2001
+        m <- Enum.toEnum 12
+        d <- Enum.toEnum 31
+        Date.exactDate y m d
+    Assert.equal
+      (OrdinalDate.fromDate <$> d20011231)
+      (OrdinalDate.lastOrdinalDateOfYear <$> y2)
+    Assert.equal
+      ((OrdinalDate.fromDate <<< DateExtra.lastDateOfYear) <$> y2)
+      (OrdinalDate.lastOrdinalDateOfYear <$> y2)
+    Assert.equal
+      (Enum.toEnum 365)
+      (OrdinalDate.dayOfYear <$> OrdinalDate.lastOrdinalDateOfYear <$> y2)
 
   test "ordinalDate" do
     Assert.equal

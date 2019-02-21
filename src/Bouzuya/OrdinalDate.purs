@@ -1,7 +1,9 @@
 module Bouzuya.OrdinalDate
   ( OrdinalDate
   , dayOfYear
+  , firstOrdinalDateOfYear
   , fromDate
+  , lastOrdinalDateOfYear
   , ordinalDate
   , year
   , toDate
@@ -81,8 +83,14 @@ exactDateFromDayOfYear y doy
                   ((Enum.enumFromTo bottom m') :: Array Month)))
             (Enum.pred m)
 
+firstOrdinalDateOfYear :: Year -> OrdinalDate
+firstOrdinalDateOfYear y = OrdinalDate y bottom
+
 fromDate :: Date -> OrdinalDate
 fromDate d = OrdinalDate (Date.year d) (dayOfYearFromDate d)
+
+lastOrdinalDateOfYear :: Year -> OrdinalDate
+lastOrdinalDateOfYear y = OrdinalDate y (DayOfYear.lastDayOfYear y)
 
 ordinalDate :: Year -> DayOfYear -> Maybe OrdinalDate
 ordinalDate y doy =
