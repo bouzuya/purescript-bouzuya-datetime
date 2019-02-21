@@ -15,10 +15,12 @@ import Data.Date as Date
 import Data.Enum (class Enum)
 import Data.Enum as Enum
 import Data.Foldable as Foldable
+import Data.Int as Int
 import Data.Maybe (Maybe(..))
 import Data.Maybe as Maybe
+import Data.Time.Duration (Days(..))
 import Partial.Unsafe as Unsafe
-import Prelude (class Bounded, class Eq, class Ord, class Show, bind, bottom, map, otherwise, show, top, (-), (<$>), (<*>), (<<<), (<>), (==), (>))
+import Prelude (class Bounded, class Eq, class Ord, class Show, bind, bottom, map, otherwise, show, top, (-), (<$>), (<*>), (<<<), (<>), (==), (>), (>>=))
 
 data OrdinalDate = OrdinalDate Year DayOfYear
 
@@ -50,21 +52,12 @@ instance showOrdinalDate :: Show OrdinalDate where
 dayOfYear :: OrdinalDate -> DayOfYear
 dayOfYear (OrdinalDate _ doy) = doy
 
-fromDate :: Date -> OrdinalDate
-fromDate d = OrdinalDate (Date.year d) (DayOfYear.dayOfYear d)
-
-ordinalDate :: Year -> DayOfYear -> Maybe OrdinalDate
-ordinalDate y doy =
-  map fromDate (exactDateFromDayOfYear y doy)
-
-toDate :: OrdinalDate -> Date
-toDate (OrdinalDate y doy) =
-  Unsafe.unsafePartial
-    (Maybe.fromJust
-      (exactDateFromDayOfYear y doy))
-
-year :: OrdinalDate -> Year
-year (OrdinalDate y _) = y
+dayOfYearFromDate :: Date -> DayOfYear
+dayOfYearFromDate d =
+  let
+    (Days n) = Date.diff d (firstDateOfYear (Date.year d))
+    doy = (Int.fromNumber n) >>= Enum.succ >>= Enum.toEnum
+  in Unsafe.unsafePartial (Maybe.fromJust doy)
 
 exactDateFromDayOfYear :: Year -> DayOfYear -> Maybe Date
 exactDateFromDayOfYear y doy
@@ -75,10 +68,32 @@ exactDateFromDayOfYear y doy
           d <- Enum.toEnum ((Enum.fromEnum doy) - (daysBeforeMonth y m))
           Date.exactDate y m d)
         ((Enum.enumFromTo bottom top) :: Array Month)
-    where
-      daysBeforeMonth :: Year -> Month -> Int
-      daysBeforeMonth y' m =
-        Foldable.sum
-          (map
-            (Enum.fromEnum <<< (Date.lastDayOfMonth y'))
-            ((Enum.enumFromTo bottom m) :: Array Month))
+      where
+        daysBeforeMonth :: Year -> Month -> Int
+        daysBeforeMonth y' m =
+          Maybe.maybe
+            0
+            (\m' ->
+              Foldable.sum
+                (map
+                  (Enum.fromEnum <<< (Date.lastDayOfMonth y'))
+                  ((Enum.enumFromTo bottom m') :: Array Month)))
+            (Enum.pred m)
+
+firstDateOfYear :: Year -> Date
+firstDateOfYear y =
+  Unsafe.unsafePartial (Maybe.fromJust (Date.exactDate y bottom bottom))
+
+fromDate :: Date -> OrdinalDate
+fromDate d = OrdinalDate (Date.year d) (dayOfYearFromDate d)
+
+ordinalDate :: Year -> DayOfYear -> Maybe OrdinalDate
+ordinalDate y doy =
+  map fromDate (exactDateFromDayOfYear y doy)
+
+toDate :: OrdinalDate -> Date
+toDate (OrdinalDate y doy) =
+  Unsafe.unsafePartial (Maybe.fromJust (exactDateFromDayOfYear y doy))
+
+year :: OrdinalDate -> Year
+year (OrdinalDate y _) = y
