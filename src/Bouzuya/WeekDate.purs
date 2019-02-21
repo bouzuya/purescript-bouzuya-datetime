@@ -15,21 +15,62 @@ import Bouzuya.WeekDate.Component.WeekOfYear as WeekOfYear
 import Bouzuya.WeekDate.Component.WeekYear (WeekYear)
 import Data.Date (Date, Month(..), Weekday(..), Year)
 import Data.Date as Date
-import Data.Enum (class BoundedEnum)
+import Data.Enum (class BoundedEnum, class Enum)
 import Data.Enum as Enum
 import Data.Maybe (Maybe)
 import Data.Maybe as Maybe
 import Partial.Unsafe as Unsafe
-import Prelude (bind, bottom, identity, negate, otherwise, pure, (&&), (*), (+), (-), (/), (<), (<$>), (<*>), (<<<), (<=), (==), (>), (>>=))
+import Prelude (class Bounded, class Eq, class Ord, class Show, bind, bottom, identity, negate, otherwise, pure, show, top, (&&), (*), (+), (-), (/), (/=), (<), (<$>), (<*>), (<<<), (<=), (<>), (==), (>), (>>=))
 
 data WeekDate = WeekDate WeekYear WeekOfYear Weekday
+
+instance boundedWeekDate :: Bounded WeekDate where
+  bottom =
+    Unsafe.unsafePartial
+      (Maybe.fromJust do
+        y <- Enum.succ bottom
+        d <- Date.exactDate y bottom bottom
+        fromDate d)
+  top =
+    Unsafe.unsafePartial
+      (Maybe.fromJust do
+        y <- Enum.pred top
+        d <- Date.exactDate y top top
+        fromDate d)
+
+instance enumWeekDate :: Enum WeekDate where
+  pred (WeekDate wy w wday)
+    | wday /= bottom = WeekDate wy w <$> Enum.pred wday
+    | w /= firstWeekOfWeekYear wy = WeekDate wy <$> (Enum.pred w) <*> (pure top)
+    | otherwise = do
+        pwy <- Enum.pred wy
+        pw <- pure (lastWeekOfWeekYear pwy)
+        pwday <- pure top
+        pure (WeekDate pwy pw pwday)
+  succ (WeekDate wy w wday)
+    | wday /= top = WeekDate wy w <$> Enum.succ wday
+    | w /= lastWeekOfWeekYear wy =
+        WeekDate wy <$> (Enum.succ w) <*> (pure bottom)
+    | otherwise = do
+        nwy <- Enum.succ wy
+        nw <- pure (firstWeekOfWeekYear nwy)
+        nwday <- pure bottom
+        pure (WeekDate nwy nw nwday)
+
+derive instance eqWeekDate :: Eq WeekDate
+
+derive instance ordWeekDate :: Ord WeekDate
+
+instance showWeekDate :: Show WeekDate where
+  show (WeekDate wy w wday) =
+    "(WeekDate " <> show wy <> " " <> show w <> " " <> show wday <> ")"
 
 firstWeekOfWeekYear :: WeekYear -> WeekOfYear
 firstWeekOfWeekYear _ = bottom
 
 lastWeekOfWeekYear :: WeekYear -> WeekOfYear
 lastWeekOfWeekYear wy =
-  -- FIXME
+  -- safe
   let y = Unsafe.unsafePartial (Maybe.fromJust (Enum.toEnum (Enum.fromEnum wy)))
   in WeekOfYear.lastWeekOfYear y
 
