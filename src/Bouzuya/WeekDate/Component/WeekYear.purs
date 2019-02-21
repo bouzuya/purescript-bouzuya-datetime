@@ -10,13 +10,13 @@ import Prelude (class Bounded, class Eq, class Ord, class Show, negate, otherwis
 newtype WeekYear = WeekYear Int
 
 instance boundedWeekYear :: Bounded WeekYear where
-  bottom = WeekYear (-271820)
+  bottom = WeekYear (-271819) -- -271819 == (fromEnum (bottom :: Year)) + 1
   top = WeekYear 275759
 
 instance boundedEnumWeekYear :: BoundedEnum WeekYear where
-  cardinality = Cardinality 547580
+  cardinality = Cardinality 547579
   toEnum n
-    | (-271820) <= n && n <= 275759 = Just (WeekYear n)
+    | (-271819) <= n && n <= 275759 = Just (WeekYear n)
     | otherwise = Nothing
   fromEnum (WeekYear n) = n
 

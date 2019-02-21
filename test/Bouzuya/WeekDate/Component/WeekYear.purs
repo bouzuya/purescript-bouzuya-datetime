@@ -3,6 +3,7 @@ module Test.Bouzuya.WeekDate.Component.WeekYear
   ) where
 
 import Bouzuya.WeekDate.Component.WeekYear (WeekYear)
+import Data.Date (Year)
 import Data.Enum (Cardinality(..))
 import Data.Enum as Enum
 import Data.Maybe (Maybe(..))
@@ -14,8 +15,12 @@ import Test.Unit.Assert as Assert
 tests :: TestSuite
 tests = suite "Bouzuya.WeekDate.Component.WeekYear" do
   test "Bounded WeekYear" do
-    Assert.equal (Just (bottom :: WeekYear)) (Enum.toEnum (-271820))
-    Assert.equal (Just (top :: WeekYear)) (Enum.toEnum 275759)
+    Assert.equal
+      (Just (bottom :: WeekYear))
+      (Enum.toEnum ((Enum.fromEnum (bottom :: Year)) + 1))
+    Assert.equal
+      (Just (top :: WeekYear))
+      (Enum.toEnum (Enum.fromEnum (top :: Year)))
 
   test "BoundedEnum WeekYear" do
     Assert.equal
