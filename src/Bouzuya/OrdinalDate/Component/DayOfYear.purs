@@ -1,20 +1,17 @@
 module Bouzuya.OrdinalDate.Component.DayOfYear
   ( DayOfYear
   , dayOfYear
-  , exactDateFromDayOfYear
   , firstDayOfYear
   , lastDayOfYear
   ) where
 
-import Data.Date (Date, Day, Month(..), Year, diff, exactDate, isLeapYear, lastDayOfMonth, year)
-import Data.Enum (class BoundedEnum, class Enum, Cardinality(..), enumFromTo, fromEnum, toEnum)
-import Data.Foldable (foldl)
+import Data.Date (Date, Year, diff, exactDate, isLeapYear, year)
+import Data.Enum (class BoundedEnum, class Enum, Cardinality(..), fromEnum, toEnum)
 import Data.Int as Int
 import Data.Maybe (Maybe(..), fromJust)
 import Data.Time.Duration (Days(..))
-import Data.Tuple (Tuple(..), fst)
 import Partial.Unsafe (unsafePartial)
-import Prelude (class Bounded, class Eq, class Ord, class Show, bottom, otherwise, show, (&&), (+), (-), (<<<), (<=), (<>), (==), (>>=))
+import Prelude (class Bounded, class Eq, class Ord, class Show, bottom, otherwise, show, (&&), (+), (-), (<<<), (<=), (<>), (>>=))
 
 newtype DayOfYear = DayOfYear Int
 
@@ -48,27 +45,6 @@ dayOfYear d =
   in
     unsafePartial (fromJust (fromDays days))
 
-exactDateFromDayOfYear :: Year -> DayOfYear -> Maybe Date
-exactDateFromDayOfYear  y d@(DayOfYear n)
-  | lastDayOfYear y == (DayOfYear 365) && n == 366 = Nothing
-  | otherwise =
-    fst
-      (foldl
-        (\a@(Tuple r s) i ->
-          case r of
-            Just _ -> a
-            Nothing ->
-              let
-                s' = s - (fromEnum (lastDayOfMonth y i))
-              in
-                Tuple
-                  (if s' <= 0
-                    then Just (unsafeDate y i (unsafeDay s))
-                    else Nothing)
-                  s')
-        (Tuple Nothing n)
-        (enumFromTo January December :: Array Month))
-
 firstDayOfYear :: Year -> DayOfYear
 firstDayOfYear _ = bottom
 
@@ -88,9 +64,3 @@ startOfYear d = unsafePartial (fromJust (exactDate (year d) bottom bottom))
 
 toDays :: DayOfYear -> Days
 toDays (DayOfYear n) = Days (Int.toNumber n)
-
-unsafeDate :: Year -> Month -> Day -> Date
-unsafeDate y m d = unsafePartial (fromJust (exactDate y m d))
-
-unsafeDay :: Int -> Day
-unsafeDay n = unsafePartial (fromJust (toEnum n))

@@ -9,6 +9,7 @@ module Bouzuya.DateTime.Component.WeekOfYear
   , weekYear
   ) where
 
+import Bouzuya.OrdinalDate as OrdinalDate
 import Bouzuya.OrdinalDate.Component.DayOfYear as DayOfYear
 import Data.Date (Date, Month(..), Weekday(..), Year, exactDate, isLeapYear, weekday, year)
 import Data.Enum (class BoundedEnum, class Enum, Cardinality(..), fromEnum, pred, succ, toEnum)
@@ -91,19 +92,20 @@ toDate (WeekDate y (WeekOfYear w) d) =
       Sunday -> 1
     dayOfYear = (w - 1) * 7 + (fromEnum d) + dayOfYearOffset
     dayOfYearTop y' = if isLeapYear y' then 366 else 365
-    dateMaybe =
+    ordinalDateMaybe =
       if dayOfYear <= 0
       then do
         py <- pred y
         doy <- toEnum ((dayOfYearTop py) + dayOfYear)
-        DayOfYear.exactDateFromDayOfYear py doy
+        OrdinalDate.ordinalDate py doy
       else if dayOfYear > dayOfYearTop y
       then do
         ny <- succ y
         doy <- toEnum (dayOfYear - (dayOfYearTop y))
-        DayOfYear.exactDateFromDayOfYear ny doy
+        OrdinalDate.ordinalDate ny doy
       else
-        DayOfYear.exactDateFromDayOfYear <$> (pure y) <*> (toEnum dayOfYear) >>= identity
+        OrdinalDate.ordinalDate <$> (pure y) <*> (toEnum dayOfYear) >>= identity
+    dateMaybe = OrdinalDate.toDate <$> ordinalDateMaybe
   in
     unsafePartial (fromJust dateMaybe)
 

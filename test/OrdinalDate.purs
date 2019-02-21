@@ -5,9 +5,10 @@ module Test.OrdinalDate
 import Bouzuya.OrdinalDate (OrdinalDate)
 import Bouzuya.OrdinalDate as OrdinalDate
 import Bouzuya.OrdinalDate.Component.DayOfYear as DayOfYear
+import Data.Date as Date
 import Data.Enum as Enum
 import Data.Maybe (Maybe(..))
-import Prelude (bottom, discard, identity, map, pure, top, unit, (&&), (<), (<$>), (<*>), (>>=))
+import Prelude (bind, bottom, discard, identity, map, pure, top, unit, (&&), (<), (<$>), (<*>), (>>=))
 import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 
@@ -68,6 +69,22 @@ tests = suite "Bouzuya.OrdinalDate" do
       (Just (OrdinalDate.fromDate bottom))
       (OrdinalDate.ordinalDate bottom bottom)
     -- top :: DayOfYear is out of range ?
+    let
+      d20181231 = do
+        y <- Enum.toEnum 2018
+        m <- Enum.toEnum 12
+        d <- Enum.toEnum 31
+        Date.exactDate y m d
+      od2018365 = do
+        y <- Enum.toEnum 2018
+        doy <- Enum.toEnum 365
+        OrdinalDate.ordinalDate y doy
+      od2018366 = do
+        y <- Enum.toEnum 2018
+        doy <- Enum.toEnum 366
+        OrdinalDate.ordinalDate y doy
+    Assert.equal d20181231 (OrdinalDate.toDate <$> od2018365)
+    Assert.equal Nothing (OrdinalDate.toDate <$> od2018366)
 
   test "year" do
     let o1 = OrdinalDate.ordinalDate bottom bottom

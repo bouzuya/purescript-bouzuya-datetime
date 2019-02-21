@@ -1,7 +1,7 @@
 module Test.OrdinalDate.Component.DayOfYear (tests) where
 
 import Bouzuya.DateTime (Month(..), canonicalDate)
-import Bouzuya.OrdinalDate.Component.DayOfYear (dayOfYear, exactDateFromDayOfYear, firstDayOfYear, lastDayOfYear)
+import Bouzuya.OrdinalDate.Component.DayOfYear (dayOfYear, firstDayOfYear, lastDayOfYear)
 import Data.Enum (toEnum)
 import Data.Maybe (Maybe(..), fromJust)
 import Partial.Unsafe (unsafePartial)
@@ -25,13 +25,6 @@ tests = suite "Bouzuya.DateTime.Component.DayOfYear" do
     date20190101 = canonicalDate year2019 January dayOfMonth1
   test "dayOfYear" do
     Assert.equal (dayOfYear date20180102) dayOfYear2
-  test "exactDateFromDayOfYear" do
-    Assert.equal
-      (Just date20180102)
-      (exactDateFromDayOfYear year2018 dayOfYear2)
-    Assert.equal
-      Nothing
-      (exactDateFromDayOfYear year2018 dayOfYear366)
   test "firstDayOfYear" do
     Assert.equal dayOfYear1 (firstDayOfYear year2018)
   test "lastDayOfYear" do

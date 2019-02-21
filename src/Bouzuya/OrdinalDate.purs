@@ -9,14 +9,16 @@ module Bouzuya.OrdinalDate
 
 import Bouzuya.OrdinalDate.Component.DayOfYear (DayOfYear)
 import Bouzuya.OrdinalDate.Component.DayOfYear as DayOfYear
-import Data.Date (Date, Year)
+import Data.Array as Array
+import Data.Date (Date, Month, Year)
 import Data.Date as Date
 import Data.Enum (class Enum)
 import Data.Enum as Enum
-import Data.Maybe (Maybe)
+import Data.Foldable as Foldable
+import Data.Maybe (Maybe(..))
 import Data.Maybe as Maybe
 import Partial.Unsafe as Unsafe
-import Prelude (class Bounded, class Eq, class Ord, class Show, bottom, map, show, top, (<$>), (<*>), (<>), (==))
+import Prelude (class Bounded, class Eq, class Ord, class Show, bind, bottom, map, otherwise, show, top, (-), (<$>), (<*>), (<<<), (<>), (==), (>))
 
 data OrdinalDate = OrdinalDate Year DayOfYear
 
@@ -53,13 +55,30 @@ fromDate d = OrdinalDate (Date.year d) (DayOfYear.dayOfYear d)
 
 ordinalDate :: Year -> DayOfYear -> Maybe OrdinalDate
 ordinalDate y doy =
-  map fromDate (DayOfYear.exactDateFromDayOfYear y doy)
+  map fromDate (exactDateFromDayOfYear y doy)
 
 toDate :: OrdinalDate -> Date
 toDate (OrdinalDate y doy) =
   Unsafe.unsafePartial
     (Maybe.fromJust
-      (DayOfYear.exactDateFromDayOfYear y doy))
+      (exactDateFromDayOfYear y doy))
 
 year :: OrdinalDate -> Year
 year (OrdinalDate y _) = y
+
+exactDateFromDayOfYear :: Year -> DayOfYear -> Maybe Date
+exactDateFromDayOfYear y doy
+  | doy > (DayOfYear.lastDayOfYear y) = Nothing
+  | otherwise =
+      Array.findMap
+        (\m -> do
+          d <- Enum.toEnum ((Enum.fromEnum doy) - (daysBeforeMonth y m))
+          Date.exactDate y m d)
+        ((Enum.enumFromTo bottom top) :: Array Month)
+    where
+      daysBeforeMonth :: Year -> Month -> Int
+      daysBeforeMonth y' m =
+        Foldable.sum
+          (map
+            (Enum.fromEnum <<< (Date.lastDayOfMonth y'))
+            ((Enum.enumFromTo bottom m) :: Array Month))
