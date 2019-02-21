@@ -6,7 +6,6 @@ module Bouzuya.WeekDate
 
 import Bouzuya.OrdinalDate (OrdinalDate)
 import Bouzuya.OrdinalDate as OrdinalDate
-import Bouzuya.OrdinalDate.Component.DayOfYear (DayOfYear)
 import Bouzuya.OrdinalDate.Component.DayOfYear as DayOfYear
 import Bouzuya.WeekDate.Component.WeekOfYear (WeekOfYear)
 import Bouzuya.WeekDate.Component.WeekOfYear as WeekOfYear
