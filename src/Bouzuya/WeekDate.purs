@@ -2,6 +2,9 @@ module Bouzuya.WeekDate
   ( WeekDate
   , fromDate
   , toDate
+  , week
+  , weekYear
+  , weekday
   ) where
 
 import Bouzuya.OrdinalDate (OrdinalDate)
@@ -9,6 +12,7 @@ import Bouzuya.OrdinalDate as OrdinalDate
 import Bouzuya.OrdinalDate.Component.DayOfYear as DayOfYear
 import Bouzuya.WeekDate.Component.WeekOfYear (WeekOfYear)
 import Bouzuya.WeekDate.Component.WeekOfYear as WeekOfYear
+import Bouzuya.WeekDate.Component.WeekYear (WeekYear)
 import Data.Date (Date, Weekday(..), Year)
 import Data.Date as Date
 import Data.Enum (class BoundedEnum)
@@ -18,7 +22,7 @@ import Data.Maybe as Maybe
 import Partial.Unsafe as Unsafe
 import Prelude (bind, identity, negate, pure, (&&), (*), (+), (-), (/), (<), (<$>), (<*>), (<<<), (<=), (>), (>>=))
 
-data WeekDate = WeekDate Year WeekOfYear Weekday
+data WeekDate = WeekDate WeekYear WeekOfYear Weekday
 
 fromDate :: Date -> WeekDate
 fromDate d =
@@ -33,17 +37,20 @@ fromDate d =
     dateMaybe =
       if od < od0104 && wday > wday0104 then do
         py <- Enum.pred y
-        pure (WeekDate py (WeekOfYear.lastWeekOfYear py) wday)
+        py' <- Enum.toEnum (Enum.fromEnum py) -- FIXME
+        pure (WeekDate py' (WeekOfYear.lastWeekOfYear py) wday)
       else if od > od1228 && wday < wday1228 then do
         ny <- Enum.succ y
-        pure (WeekDate ny (WeekOfYear.firstWeekOfYear ny) wday)
+        ny' <- Enum.toEnum (Enum.fromEnum ny) -- FIXME
+        pure (WeekDate ny' (WeekOfYear.firstWeekOfYear ny) wday)
       else do
         let
           doyInt =
             Enum.fromEnum (OrdinalDate.dayOfYear (OrdinalDate.fromDate d))
           woyInt = (doyInt + (Enum.fromEnum wday0104) - 4 - 1) / 7 + 1
         woy <- Enum.toEnum woyInt
-        pure (WeekDate y woy wday)
+        y' <- Enum.toEnum (Enum.fromEnum y) -- FIXME
+        pure (WeekDate y' woy wday)
     in Unsafe.unsafePartial (Maybe.fromJust dateMaybe)
 
 modifyBoundedEnum :: forall a. BoundedEnum a => (Int -> Int) -> a -> Maybe a
@@ -64,8 +71,11 @@ ordinalDate1228 y =
   in Unsafe.unsafePartial (Maybe.fromJust od1228Maybe) -- safe
 
 toDate :: WeekDate -> Date
-toDate (WeekDate y woy wday) =
+toDate (WeekDate wy woy wday) =
   let
+    y =
+      Unsafe.unsafePartial
+        (Maybe.fromJust (Enum.toEnum (Enum.fromEnum wy))) -- FIXME
     w = Enum.fromEnum woy
     dayOfYearOffset = case WeekOfYear.firstWeekdayOfYear y of
       Monday -> 0
@@ -81,14 +91,25 @@ toDate (WeekDate y woy wday) =
       if dayOfYear <= 0
       then do
         py <- Enum.pred y
+        py' <- Enum.toEnum (Enum.fromEnum py) -- FIXME
         doy <- Enum.toEnum ((lastDayOfYear py) + dayOfYear)
-        OrdinalDate.ordinalDate py doy
+        OrdinalDate.ordinalDate py' doy
       else if dayOfYear > lastDayOfYear y
       then do
         ny <- Enum.succ y
+        ny' <- Enum.toEnum (Enum.fromEnum ny) -- FIXME
         doy <- Enum.toEnum (dayOfYear - (lastDayOfYear y))
-        OrdinalDate.ordinalDate ny doy
+        OrdinalDate.ordinalDate ny' doy
       else
         OrdinalDate.ordinalDate <$> (pure y) <*> (Enum.toEnum dayOfYear) >>= identity
     dateMaybe = OrdinalDate.toDate <$> ordinalDateMaybe
   in Unsafe.unsafePartial (Maybe.fromJust dateMaybe)
+
+week :: WeekDate -> WeekOfYear
+week (WeekDate _ w _) = w
+
+weekYear :: WeekDate -> WeekYear
+weekYear (WeekDate wy _ _) = wy
+
+weekday :: WeekDate -> Weekday
+weekday (WeekDate _ _ wday) = wday
