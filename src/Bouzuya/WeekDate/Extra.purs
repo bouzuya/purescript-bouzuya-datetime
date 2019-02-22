@@ -3,7 +3,6 @@ module Bouzuya.WeekDate.Extra
   , lastWeekdayOfYear
   ) where
 
-
 import Bouzuya.Date.Extra as DateExtra
 import Data.Date (Weekday, Year)
 import Data.Date as Date
