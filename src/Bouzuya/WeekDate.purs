@@ -189,7 +189,7 @@ weekYearFromDate d
       in
         if ((Date.day d) > (Date.day d1228)) &&
           ((Date.weekday d) < (Date.weekday d1228))
-        then (Enum.fromEnum <$> Enum.succ y) >>= Enum.toEnum -- TODO
+        then (Enum.fromEnum <$> Enum.succ y) >>= Enum.toEnum
         else Enum.toEnum (Enum.fromEnum y)
   | otherwise = Enum.toEnum (Enum.fromEnum (Date.year d))
 
