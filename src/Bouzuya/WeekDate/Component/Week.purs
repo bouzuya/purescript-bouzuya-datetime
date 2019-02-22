@@ -12,8 +12,6 @@ import Data.Enum as Enum
 import Data.Maybe (Maybe(..))
 import Prelude (class Bounded, class Eq, class Ord, class Show, bottom, otherwise, show, (&&), (+), (-), (<<<), (<=), (<>), (==), (||))
 
-data WeekDate = WeekDate Year Week Weekday
-
 newtype Week = Week Int
 
 derive newtype instance eqWeek :: Eq Week
