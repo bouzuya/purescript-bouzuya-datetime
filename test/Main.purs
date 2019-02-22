@@ -2,6 +2,7 @@ module Test.Main (main) where
 
 import Effect (Effect)
 import Prelude (Unit, discard)
+import Test.Bouzuya.Date.Extra as DateExtra
 import Test.Bouzuya.OrdinalDate as OrdinalDate
 import Test.Bouzuya.OrdinalDate.Component.DayOfYear as OrdinalDateComponentDayOfYear
 import Test.Bouzuya.WeekDate as WeekDate
@@ -12,6 +13,7 @@ import Test.Unit.Main (runTest)
 
 main :: Effect Unit
 main = runTest do
+  DateExtra.tests
   OrdinalDate.tests
   OrdinalDateComponentDayOfYear.tests
   WeekDate.tests
