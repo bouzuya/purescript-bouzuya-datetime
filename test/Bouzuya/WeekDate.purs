@@ -169,6 +169,8 @@ tests = suite "Bouzuya.WeekDate" do
       , TupleNested.tuple7 "Sat -> 52 Prev (3)" 2000 1 3 2000 1 Monday
       , TupleNested.tuple7 "Sun -> 52 Prev (1)" 2005 12 31 2005 52 Saturday
       , TupleNested.tuple7 "Sun -> 52 Prev (2)" 2006 1 1 2005 52 Sunday
+      , TupleNested.tuple7 "Others (1)" 2019 2 22 2019 8 Friday
+      , TupleNested.tuple7 "Others (2)" 2020 7 24 2020 30 Friday
       ]
       (TupleNested.uncurry7
         (\s y m d wy w wday -> do

@@ -8,21 +8,18 @@ module Bouzuya.WeekDate
   , weekday
   ) where
 
-import Bouzuya.OrdinalDate (OrdinalDate)
 import Bouzuya.OrdinalDate as OrdinalDate
-import Bouzuya.OrdinalDate.Component.DayOfYear as DayOfYear
 import Bouzuya.WeekDate.Component.Week (Week)
 import Bouzuya.WeekDate.Component.Week as Week
 import Bouzuya.WeekDate.Component.WeekYear (WeekYear)
-import Bouzuya.WeekDate.Extra as WeekDateExtra
-import Data.Date (Date, Month(..), Weekday(..), Year)
+import Data.Date (Date, Month(..), Weekday)
 import Data.Date as Date
-import Data.Enum (class BoundedEnum, class Enum)
+import Data.Enum (class Enum)
 import Data.Enum as Enum
 import Data.Maybe (Maybe(..))
 import Data.Maybe as Maybe
 import Partial.Unsafe as Unsafe
-import Prelude (class Bounded, class Eq, class Ord, class Show, bind, bottom, identity, negate, otherwise, pure, show, top, (&&), (*), (+), (-), (/), (/=), (<), (<$>), (<*>), (<<<), (<=), (<>), (==), (>), (>>=))
+import Prelude (class Bounded, class Eq, class Ord, class Show, bind, bottom, identity, otherwise, pure, show, top, ($), (&&), (*), (+), (-), (/), (/=), (<), (<$>), (<*>), (<=), (<>), (==), (>), (>>=))
 
 data WeekDate = WeekDate WeekYear Week Weekday
 
@@ -96,57 +93,66 @@ fromDate d = do
       in Enum.toEnum woyN
   pure (WeekDate wy woy (Date.weekday d))
 
-modifyBoundedEnum :: forall a. BoundedEnum a => (Int -> Int) -> a -> Maybe a
-modifyBoundedEnum f = Enum.toEnum <<< f <<< Enum.fromEnum
-
-ordinalDate0104 :: Year -> OrdinalDate
-ordinalDate0104 y =
-  let
-    doy0104 = modifyBoundedEnum (_ + 3) (DayOfYear.firstDayOfYear y)
-    od0104Maybe = (OrdinalDate.ordinalDate y) <$> doy0104 >>= identity
-  in Unsafe.unsafePartial (Maybe.fromJust od0104Maybe) -- safe
-
-ordinalDate1228 :: Year -> OrdinalDate
-ordinalDate1228 y =
-  let
-    doy1228 = modifyBoundedEnum (_ - 3) (DayOfYear.lastDayOfYear y)
-    od1228Maybe = (OrdinalDate.ordinalDate y) <$> doy1228 >>= identity
-  in Unsafe.unsafePartial (Maybe.fromJust od1228Maybe) -- safe
-
 toDate :: WeekDate -> Date
-toDate (WeekDate wy woy wday) =
-  let
-    y =
-      Unsafe.unsafePartial
-        (Maybe.fromJust (Enum.toEnum (Enum.fromEnum wy))) -- FIXME
-    w = Enum.fromEnum woy
-    dayOfYearOffset = case WeekDateExtra.firstWeekdayOfYear y of
-      Monday -> 0
-      Tuesday -> -1
-      Wednesday -> -2
-      Thursday -> -3
-      Friday -> 3
-      Saturday -> 2
-      Sunday -> 1
-    dayOfYear = (w - 1) * 7 + (Enum.fromEnum wday) + dayOfYearOffset
-    lastDayOfYear = Enum.fromEnum <<< DayOfYear.lastDayOfYear
-    ordinalDateMaybe =
-      if dayOfYear <= 0
-      then do
-        py <- Enum.pred y
-        py' <- Enum.toEnum (Enum.fromEnum py) -- FIXME
-        doy <- Enum.toEnum ((lastDayOfYear py) + dayOfYear)
-        OrdinalDate.ordinalDate py' doy
-      else if dayOfYear > lastDayOfYear y
-      then do
-        ny <- Enum.succ y
-        ny' <- Enum.toEnum (Enum.fromEnum ny) -- FIXME
-        doy <- Enum.toEnum (dayOfYear - (lastDayOfYear y))
-        OrdinalDate.ordinalDate ny' doy
-      else
-        OrdinalDate.ordinalDate <$> (pure y) <*> (Enum.toEnum dayOfYear) >>= identity
-    dateMaybe = OrdinalDate.toDate <$> ordinalDateMaybe
-  in Unsafe.unsafePartial (Maybe.fromJust dateMaybe)
+toDate (WeekDate wy w wday)
+  -- 1 Mon, 2 Tue, 3 Wed, 4 Thu, 5 Fri, 6 Sat, 7 Sun
+  --    29,    30,    31,     1,     2,     3,     4 (-01-04 -> 7 Sun)
+  --    30,    31,     1,     2,     3,     4,     5 (-01-04 -> 6 Sat)
+  --    31,     1,     2,     3,     4,     5,     6 (-01-04 -> 5 Fri)
+  --     1,     2,     3,     4,     5,     6,     7 (-01-04 -> 4 Thu)
+  --     2,     3,     4,     5,     6,     7,     8 (-01-04 -> 3 Wed)
+  --     3,     4,     5,     6,     7,     8,     9 (-01-04 -> 2 Tue)
+  --     4,     5,     6,     7,     8,     9,    10 (-01-04 -> 1 Mon)
+  | w == firstWeekOfWeekYear wy = Unsafe.unsafePartial $ Maybe.fromJust $ do
+      wyn <- pure (Enum.fromEnum wy)
+      cy <- Enum.toEnum wyn
+      py <- Enum.toEnum (wyn - 1)
+      wdayn <- pure (Enum.fromEnum wday)
+      wdayn0104 <- do
+        day04 <- Enum.toEnum 4
+        d0104 <- Date.exactDate cy bottom day04
+        pure (Enum.fromEnum (Date.weekday d0104))
+      offset <- pure (wdayn - wdayn0104 + 4)
+      y <- pure (if offset <= 0 then py else cy)
+      m <- pure (if offset <= 0 then top else bottom)
+      day <- Enum.toEnum (offset + (if offset <= 0 then 31 else 0))
+      Date.exactDate y m day
+
+  -- 1 Mon, 2 Tue, 3 Wed, 4 Thu, 5 Fri, 6 Sat, 7 Sun
+  --    22,    23,    24,    25,    26,    27,    28 (-12-28 -> 7 Sun)
+  --    23,    24,    25,    26,    27,    28,    29 (-12-28 -> 6 Sat)
+  --    24,    25,    26,    27,    28,    29,    30 (-12-28 -> 5 Fri)
+  --    25,    26,    27,    28,    29,    30,    31 (-12-28 -> 4 Thu)
+  --    26,    27,    28,    29,    30,    31,     1 (-12-28 -> 3 Wed)
+  --    27,    28,    29,    30,    31,     1,     2 (-12-28 -> 2 Tue)
+  --    28,    29,    30,    31,     1,     2,     3 (-12-28 -> 1 Mon)
+  | w == lastWeekOfWeekYear wy = Unsafe.unsafePartial $ Maybe.fromJust $ do
+      wyn <- pure (Enum.fromEnum wy)
+      cy <- Enum.toEnum wyn
+      ny <- Enum.toEnum (wyn + 1)
+      wdayn <- pure (Enum.fromEnum wday)
+      wdayn1228 <- do
+        day28 <- Enum.toEnum 28
+        d1228 <- Date.exactDate cy top day28
+        pure (Enum.fromEnum (Date.weekday d1228))
+      offset <- pure (wdayn - wdayn1228 - 3)
+      y <- pure (if offset <= 0 then cy else ny)
+      m <- pure (if offset <= 0 then top else bottom)
+      day <- Enum.toEnum (offset + (if offset <= 0 then 31 else 0))
+      Date.exactDate y m day
+
+  | otherwise = Unsafe.unsafePartial $ Maybe.fromJust $ do
+      y <- Enum.toEnum (Enum.fromEnum wy)
+      wn <- pure (Enum.fromEnum w)
+      wdayn <- pure (Enum.fromEnum wday)
+      wdayn0104 <- do
+        day04 <- Enum.toEnum 4
+        d0104 <- Date.exactDate y bottom day04
+        pure (Enum.fromEnum (Date.weekday d0104))
+      doyn <- pure ((wn - 1) * 7 + wdayn - wdayn0104 + 4)
+      doy <- Enum.toEnum doyn
+      od <- OrdinalDate.ordinalDate y doy
+      pure (OrdinalDate.toDate od)
 
 week :: WeekDate -> Week
 week (WeekDate _ w _) = w
