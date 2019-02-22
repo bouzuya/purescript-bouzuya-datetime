@@ -62,27 +62,6 @@ dayOfYearFromDate d =
     doy = (Int.fromNumber n) >>= Enum.succ >>= Enum.toEnum
   in Unsafe.unsafePartial (Maybe.fromJust doy)
 
-exactDateFromDayOfYear :: Year -> DayOfYear -> Maybe Date
-exactDateFromDayOfYear y doy
-  | doy > (DayOfYear.lastDayOfYear y) = Nothing
-  | otherwise =
-      Array.findMap
-        (\m -> do
-          d <- Enum.toEnum ((Enum.fromEnum doy) - (daysBeforeMonth y m))
-          Date.exactDate y m d)
-        ((Enum.enumFromTo bottom top) :: Array Month)
-      where
-        daysBeforeMonth :: Year -> Month -> Int
-        daysBeforeMonth y' m =
-          Maybe.maybe
-            0
-            (\m' ->
-              Foldable.sum
-                (map
-                  (Enum.fromEnum <<< (Date.lastDayOfMonth y'))
-                  ((Enum.enumFromTo bottom m') :: Array Month)))
-            (Enum.pred m)
-
 firstOrdinalDateOfYear :: Year -> OrdinalDate
 firstOrdinalDateOfYear y = OrdinalDate y bottom
 
@@ -93,12 +72,30 @@ lastOrdinalDateOfYear :: Year -> OrdinalDate
 lastOrdinalDateOfYear y = OrdinalDate y (DayOfYear.lastDayOfYear y)
 
 ordinalDate :: Year -> DayOfYear -> Maybe OrdinalDate
-ordinalDate y doy =
-  map fromDate (exactDateFromDayOfYear y doy)
+ordinalDate y doy
+  | doy > (DayOfYear.lastDayOfYear y) = Nothing
+  | otherwise = Just (OrdinalDate y doy)
 
 toDate :: OrdinalDate -> Date
-toDate (OrdinalDate y doy) =
-  Unsafe.unsafePartial (Maybe.fromJust (exactDateFromDayOfYear y doy))
+toDate (OrdinalDate y doy) = Unsafe.unsafePartial (Maybe.fromJust dateMaybe)
+  where
+    dateMaybe :: Maybe Date
+    dateMaybe =
+      Array.findMap
+        (\m -> do
+          d <- Enum.toEnum ((Enum.fromEnum doy) - (daysBeforeMonth y m))
+          Date.exactDate y m d)
+        ((Enum.enumFromTo bottom top) :: Array Month)
+    daysBeforeMonth :: Year -> Month -> Int
+    daysBeforeMonth y' m =
+      Maybe.maybe
+        0
+        (\m' ->
+          Foldable.sum
+            (map
+              (Enum.fromEnum <<< (Date.lastDayOfMonth y'))
+              ((Enum.enumFromTo bottom m') :: Array Month)))
+        (Enum.pred m)
 
 year :: OrdinalDate -> Year
 year (OrdinalDate y _) = y
