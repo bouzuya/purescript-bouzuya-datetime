@@ -1,15 +1,13 @@
 module Bouzuya.OrdinalDate.Component.DayOfYear
   ( DayOfYear
-  , firstDayOfYear
-  , lastDayOfYear
+  , lastDayOfYearOfLongYear
+  , lastDayOfYearOfShortYear
   ) where
 
-import Data.Date (Year)
-import Data.Date as Date
 import Data.Enum (class BoundedEnum, class Enum, Cardinality(..))
 import Data.Enum as Enum
 import Data.Maybe (Maybe(..))
-import Prelude (class Bounded, class Eq, class Ord, class Show, bottom, otherwise, show, (&&), (+), (-), (<<<), (<=), (<>))
+import Prelude (class Bounded, class Eq, class Ord, class Show, otherwise, show, (&&), (+), (-), (<<<), (<=), (<>))
 
 newtype DayOfYear = DayOfYear Int
 
@@ -35,10 +33,8 @@ instance enumDayOfYear :: Enum DayOfYear where
 instance showDayOfYear :: Show DayOfYear where
   show (DayOfYear n) = "(DayOfYear " <> show n <> ")"
 
-firstDayOfYear :: Year -> DayOfYear
-firstDayOfYear _ = bottom
+lastDayOfYearOfLongYear :: DayOfYear
+lastDayOfYearOfLongYear = DayOfYear 366
 
-lastDayOfYear :: Year -> DayOfYear
-lastDayOfYear y
-  | Date.isLeapYear y = DayOfYear 366
-  | otherwise = DayOfYear 365
+lastDayOfYearOfShortYear :: DayOfYear
+lastDayOfYearOfShortYear = DayOfYear 365

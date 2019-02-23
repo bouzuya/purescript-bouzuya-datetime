@@ -5,7 +5,6 @@ module Test.Bouzuya.OrdinalDate
 import Bouzuya.Date.Extra as DateExtra
 import Bouzuya.OrdinalDate (OrdinalDate)
 import Bouzuya.OrdinalDate as OrdinalDate
-import Bouzuya.OrdinalDate.Component.DayOfYear as DayOfYear
 import Data.Date as Date
 import Data.Enum as Enum
 import Data.Maybe (Maybe(..))
@@ -27,7 +26,8 @@ tests = suite "Bouzuya.OrdinalDate" do
       y2 = Enum.toEnum 2001
       doy1 = Enum.toEnum 1
       doy2 = Enum.toEnum 2
-      doy3 = DayOfYear.lastDayOfYear <$> y1
+      doy3 =
+        (OrdinalDate.dayOfYear <<< OrdinalDate.lastOrdinalDateOfYear) <$> y1
       od1 = OrdinalDate.ordinalDate <$> y1 <*> doy1 >>= identity -- 2000-001
       od2 = OrdinalDate.ordinalDate <$> y1 <*> doy2 >>= identity -- 2000-002
       od3 = OrdinalDate.ordinalDate <$> y2 <*> doy1 >>= identity -- 2001-001

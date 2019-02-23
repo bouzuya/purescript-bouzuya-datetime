@@ -3,7 +3,6 @@ module Test.Bouzuya.WeekDate
   ) where
 
 import Bouzuya.OrdinalDate as OrdinalDate
-import Bouzuya.OrdinalDate.Component.DayOfYear as DayOfYear
 import Bouzuya.WeekDate (Week, WeekDate, WeekYear)
 import Bouzuya.WeekDate as WeekDate
 import Bouzuya.WeekDate.Extra as WeekDateExtra
@@ -13,7 +12,7 @@ import Data.Enum as Enum
 import Data.Foldable as Foldable
 import Data.Maybe (Maybe(..))
 import Data.Tuple.Nested as TupleNested
-import Prelude (bind, bottom, discard, identity, join, pure, show, top, unit, (&&), (-), (<), (<$>), (<*>), (==), (>>=))
+import Prelude (bind, bottom, discard, identity, join, pure, show, top, unit, (&&), (-), (<), (<$>), (<*>), (<<<), (==), (>>=))
 import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 
@@ -38,7 +37,8 @@ tests = suite "Bouzuya.WeekDate" do
       y2 = Enum.toEnum 2001
       doy1 = Enum.toEnum 1
       doy2 = Enum.toEnum 2
-      doy3 = DayOfYear.lastDayOfYear <$> y1
+      doy3 =
+        (OrdinalDate.dayOfYear <<< OrdinalDate.lastOrdinalDateOfYear) <$> y1
       wd1 = do
         od <- OrdinalDate.ordinalDate <$> y1 <*> doy1 >>= identity
         d <- pure (OrdinalDate.toDate od)

@@ -4,13 +4,15 @@ module Bouzuya.OrdinalDate
   , firstOrdinalDateOfYear
   , fromDate
   , lastOrdinalDateOfYear
+  , module ReExportDayOfYear
   , ordinalDate
-  , year
   , toDate
+  , year
   ) where
 
 import Bouzuya.Date.Extra as DateExtra
 import Bouzuya.OrdinalDate.Component.DayOfYear (DayOfYear)
+import Bouzuya.OrdinalDate.Component.DayOfYear (DayOfYear) as ReExportDayOfYear
 import Bouzuya.OrdinalDate.Component.DayOfYear as DayOfYear
 import Data.Array as Array
 import Data.Date (Date, Month, Year)
@@ -29,20 +31,20 @@ data OrdinalDate = OrdinalDate Year DayOfYear
 
 instance boundedOrdinalDate :: Bounded OrdinalDate where
   bottom = OrdinalDate bottom bottom
-  top = OrdinalDate top (DayOfYear.lastDayOfYear top)
+  top = OrdinalDate top (lastDayOfYear top)
 
 instance enumOrdinalDate :: Enum OrdinalDate where
   pred (OrdinalDate y doy) =
-    if doy == DayOfYear.firstDayOfYear y
+    if doy == firstDayOfYear y
     then
       let py = Enum.pred y
-      in OrdinalDate <$> py <*> (DayOfYear.lastDayOfYear <$> py)
+      in OrdinalDate <$> py <*> (lastDayOfYear <$> py)
     else OrdinalDate y <$> (Enum.pred doy)
   succ (OrdinalDate y doy) =
-    if doy == DayOfYear.lastDayOfYear y
+    if doy == lastDayOfYear y
     then
       let ny = Enum.succ y
-      in OrdinalDate <$> ny <*> (DayOfYear.firstDayOfYear <$> ny)
+      in OrdinalDate <$> ny <*> (firstDayOfYear <$> ny)
     else OrdinalDate y <$> (Enum.succ doy)
 
 derive instance eqOrdinalDate :: Eq OrdinalDate
@@ -62,18 +64,26 @@ dayOfYearFromDate d =
     doy = (Int.fromNumber n) >>= Enum.succ >>= Enum.toEnum
   in Unsafe.unsafePartial (Maybe.fromJust doy)
 
+firstDayOfYear :: Year -> DayOfYear
+firstDayOfYear _ = bottom
+
 firstOrdinalDateOfYear :: Year -> OrdinalDate
 firstOrdinalDateOfYear y = OrdinalDate y bottom
 
 fromDate :: Date -> OrdinalDate
 fromDate d = OrdinalDate (Date.year d) (dayOfYearFromDate d)
 
+lastDayOfYear :: Year -> DayOfYear
+lastDayOfYear y
+  | Date.isLeapYear y = DayOfYear.lastDayOfYearOfLongYear
+  | otherwise = DayOfYear.lastDayOfYearOfShortYear
+
 lastOrdinalDateOfYear :: Year -> OrdinalDate
-lastOrdinalDateOfYear y = OrdinalDate y (DayOfYear.lastDayOfYear y)
+lastOrdinalDateOfYear y = OrdinalDate y (lastDayOfYear y)
 
 ordinalDate :: Year -> DayOfYear -> Maybe OrdinalDate
 ordinalDate y doy
-  | doy > (DayOfYear.lastDayOfYear y) = Nothing
+  | doy > (lastDayOfYear y) = Nothing
   | otherwise = Just (OrdinalDate y doy)
 
 toDate :: OrdinalDate -> Date
