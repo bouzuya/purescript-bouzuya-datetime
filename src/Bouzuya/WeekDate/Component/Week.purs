@@ -1,5 +1,7 @@
 module Bouzuya.WeekDate.Component.Week
   ( Week
+  , lastWeekOfLongYear
+  , lastWeekOfShortYear
   ) where
 
 import Data.Enum (class BoundedEnum, class Enum)
@@ -30,3 +32,9 @@ instance enumWeek :: Enum Week where
 
 instance showWeek :: Show Week where
   show (Week n) = "(Week " <> show n <> ")"
+
+lastWeekOfLongYear :: Week
+lastWeekOfLongYear = Week 53
+
+lastWeekOfShortYear :: Week
+lastWeekOfShortYear = Week 52

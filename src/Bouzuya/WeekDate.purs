@@ -12,11 +12,12 @@ module Bouzuya.WeekDate
   , weekday
   ) where
 
+import Bouzuya.Date.Extra as DateExtra
 import Bouzuya.OrdinalDate as OrdinalDate
 import Bouzuya.WeekDate.Component.Week (Week)
+import Bouzuya.WeekDate.Component.Week as Week
 import Bouzuya.WeekDate.Component.WeekYear (WeekYear)
-import Bouzuya.WeekDate.Extra as WeekDateExtra
-import Data.Date (Date, Month(..), Weekday, Year)
+import Data.Date (Date, Month(..), Weekday)
 import Data.Date as Date
 import Data.Enum (class Enum)
 import Data.Enum as Enum
@@ -85,19 +86,14 @@ lastWeekDateOfWeekYear wy = WeekDate wy (lastWeekOfWeekYear wy) top
 
 lastWeekOfWeekYear :: WeekYear -> Week
 lastWeekOfWeekYear wy =
-  -- safe
-  let y = Unsafe.unsafePartial (Maybe.fromJust (Enum.toEnum (Enum.fromEnum wy)))
-  in lastWeekOfYear y
-  where
-    isLongYear :: Year -> Boolean
-    isLongYear y =
-      let w = WeekDateExtra.firstWeekdayOfYear y
-      in (w == Date.Thursday) || (w == Date.Wednesday && Date.isLeapYear y)
-
-    lastWeekOfYear :: Year -> Week
-    lastWeekOfYear y
-      | isLongYear y = Unsafe.unsafePartial (Maybe.fromJust (Enum.toEnum 53))
-      | otherwise = Unsafe.unsafePartial (Maybe.fromJust (Enum.toEnum 52))
+  let
+    mainYear = Date.year (toDate (lastWeekDateOfWeek wy bottom))
+    firstWeekday = Date.weekday (DateExtra.firstDateOfYear mainYear)
+    isLongYear =
+      (firstWeekday == Date.Thursday) ||
+        ((firstWeekday == Date.Wednesday) && (Date.isLeapYear mainYear))
+  in
+    if isLongYear then Week.lastWeekOfLongYear else Week.lastWeekOfShortYear
 
 fromDate :: Date -> Maybe WeekDate
 fromDate d = do
