@@ -4,10 +4,8 @@ module Test.Bouzuya.WeekDate
 
 import Bouzuya.OrdinalDate as OrdinalDate
 import Bouzuya.OrdinalDate.Component.DayOfYear as DayOfYear
-import Bouzuya.WeekDate (WeekDate)
+import Bouzuya.WeekDate (Week, WeekDate, WeekYear)
 import Bouzuya.WeekDate as WeekDate
-import Bouzuya.WeekDate.Component.Week (Week)
-import Bouzuya.WeekDate.Component.WeekYear (WeekYear)
 import Bouzuya.WeekDate.Extra as WeekDateExtra
 import Data.Date (Date, Weekday(..))
 import Data.Date as Date

@@ -5,6 +5,8 @@ module Bouzuya.WeekDate
   , fromDate
   , lastWeekDateOfWeek
   , lastWeekDateOfWeekYear
+  , module ReExportWeek
+  , module ReExportWeekYear
   , toDate
   , week
   , weekDate
@@ -14,8 +16,10 @@ module Bouzuya.WeekDate
 
 import Bouzuya.Date.Extra as DateExtra
 import Bouzuya.OrdinalDate as OrdinalDate
+import Bouzuya.WeekDate.Component.Week (Week) as ReExportWeek
 import Bouzuya.WeekDate.Component.Week (Week)
 import Bouzuya.WeekDate.Component.Week as Week
+import Bouzuya.WeekDate.Component.WeekYear (WeekYear) as ReExportWeekYear
 import Bouzuya.WeekDate.Component.WeekYear (WeekYear)
 import Data.Date (Date, Month(..), Weekday)
 import Data.Date as Date
