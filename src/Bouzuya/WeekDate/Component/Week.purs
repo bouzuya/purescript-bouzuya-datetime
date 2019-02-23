@@ -1,16 +1,11 @@
 module Bouzuya.WeekDate.Component.Week
   ( Week
-  , firstWeekOfYear
-  , lastWeekOfYear
   ) where
 
-import Bouzuya.WeekDate.Extra as WeekDateExtra
-import Data.Date (Year)
-import Data.Date as Date
 import Data.Enum (class BoundedEnum, class Enum)
 import Data.Enum as Enum
 import Data.Maybe (Maybe(..))
-import Prelude (class Bounded, class Eq, class Ord, class Show, bottom, otherwise, show, (&&), (+), (-), (<<<), (<=), (<>), (==), (||))
+import Prelude (class Bounded, class Eq, class Ord, class Show, otherwise, show, (&&), (+), (-), (<<<), (<=), (<>))
 
 newtype Week = Week Int
 
@@ -18,15 +13,9 @@ derive newtype instance eqWeek :: Eq Week
 
 derive newtype instance ordWeek :: Ord Week
 
-longYearLastWeek :: Week
-longYearLastWeek = Week 53
-
-shortYearLastWeek :: Week
-shortYearLastWeek = Week 52
-
 instance boundedWeek :: Bounded Week where
   bottom = Week 1
-  top = longYearLastWeek
+  top = Week 53
 
 instance boundedEnumWeek :: BoundedEnum Week where
   cardinality = Enum.Cardinality 53
@@ -41,16 +30,3 @@ instance enumWeek :: Enum Week where
 
 instance showWeek :: Show Week where
   show (Week n) = "(Week " <> show n <> ")"
-
-firstWeekOfYear :: Year -> Week
-firstWeekOfYear _ = bottom
-
-isLongYear :: Year -> Boolean
-isLongYear y =
-  let w = WeekDateExtra.firstWeekdayOfYear y
-  in (w == Date.Thursday) || (w == Date.Wednesday && Date.isLeapYear y)
-
-lastWeekOfYear :: Year -> Week
-lastWeekOfYear y
-  | isLongYear y = longYearLastWeek
-  | otherwise = shortYearLastWeek
