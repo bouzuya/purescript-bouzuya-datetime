@@ -6,28 +6,43 @@ import Bouzuya.OrdinalDate as OrdinalDate
 import Bouzuya.WeekDate (Week, WeekDate, WeekYear)
 import Bouzuya.WeekDate as WeekDate
 import Bouzuya.WeekDate.Extra as WeekDateExtra
-import Data.Date (Date, Weekday(..))
+import Data.Date (Date, Day, Month, Weekday(..), Year)
 import Data.Date as Date
 import Data.Enum as Enum
 import Data.Foldable as Foldable
 import Data.Maybe (Maybe(..))
 import Data.Tuple.Nested as TupleNested
-import Prelude (bind, bottom, discard, identity, join, pure, show, top, unit, (&&), (-), (<), (<$>), (<*>), (<<<), (==), (>>=))
+import Prelude (bind, negate, bottom, discard, identity, join, pure, show, top, unit, (&&), (-), (<), (<$>), (<*>), (<<<), (==), (>>=))
 import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 
 tests :: TestSuite
 tests = suite "Bouzuya.WeekDate" do
+  test "bottom :: Date" do
+    let date = bottom :: Date
+    Assert.equal (bottom :: Year) (Date.year date)
+    Assert.equal ((Enum.toEnum (-271820)) :: _ Year) (Just (bottom :: Year))
+    Assert.equal true (Date.isLeapYear (bottom :: Year))
+    Assert.equal (bottom :: Month) (Date.month date)
+    Assert.equal ((Enum.toEnum 1) :: _ Month) (Just (bottom :: Month))
+    Assert.equal (bottom :: Day) (Date.day date)
+    Assert.equal ((Enum.toEnum 1) :: _ Day) (Just (bottom :: Day))
+    Assert.equal Date.Saturday (Date.weekday date)
+
+  test "top :: Date" do
+    let date = top :: Date
+    Assert.equal (top :: Year) (Date.year date)
+    Assert.equal ((Enum.toEnum 275759) :: _ Year) (Just (top :: Year))
+    Assert.equal false (Date.isLeapYear (top :: Year))
+    Assert.equal (top :: Month) (Date.month date)
+    Assert.equal ((Enum.toEnum 12) :: _ Month) (Just (top :: Month))
+    Assert.equal (top :: Day) (Date.day date)
+    Assert.equal ((Enum.toEnum 31) :: _ Day) (Just (top :: Day))
+    Assert.equal Date.Monday (Date.weekday date)
+
   test "Bounded WeekDate" do
-    let
-      d1 = do
-        y <- Enum.succ bottom
-        Date.exactDate y bottom bottom
-      d2 = do
-        y <- Enum.pred top
-        Date.exactDate y top top
-    Assert.equal (d1 >>= WeekDate.fromDate) (Just (bottom :: WeekDate))
-    Assert.equal (d2 >>= WeekDate.fromDate) (Just (top :: WeekDate))
+    Assert.equal (WeekDate.fromDate bottom) (bottom :: WeekDate)
+    Assert.equal (WeekDate.fromDate top) (top :: WeekDate)
 
   test "Enum WeekDate" do
     Assert.equal Nothing (Enum.pred bottom :: Maybe WeekDate)
@@ -42,23 +57,23 @@ tests = suite "Bouzuya.WeekDate" do
       wd1 = do
         od <- OrdinalDate.ordinalDate <$> y1 <*> doy1 >>= identity
         d <- pure (OrdinalDate.toDate od)
-        WeekDate.fromDate d  -- 2000-001
+        pure (WeekDate.fromDate d)  -- 2000-001
       wd2 = do
         od <- OrdinalDate.ordinalDate <$> y1 <*> doy2 >>= identity
         d <- pure (OrdinalDate.toDate od)
-        WeekDate.fromDate d  -- 2000-002
+        pure (WeekDate.fromDate d)  -- 2000-002
       wd3 = do
         od <- OrdinalDate.ordinalDate <$> y2 <*> doy1 >>= identity
         d <- pure (OrdinalDate.toDate od)
-        WeekDate.fromDate d  -- 2001-001
+        pure (WeekDate.fromDate d)  -- 2001-001
       wd4 = do
         od <- OrdinalDate.ordinalDate <$> y2 <*> doy2 >>= identity
         d <- pure (OrdinalDate.toDate od)
-        WeekDate.fromDate d  -- 2001-002
+        pure (WeekDate.fromDate d)  -- 2001-002
       wd5 = do
         od <- OrdinalDate.ordinalDate <$> y1 <*> doy3 >>= identity
         d <- pure (OrdinalDate.toDate od)
-        WeekDate.fromDate d  -- 2000-366
+        pure (WeekDate.fromDate d)  -- 2000-366
     Assert.equal wd2 (wd1 >>= Enum.succ)
     Assert.equal wd4 (wd3 >>= Enum.succ)
     Assert.equal wd3 (wd5 >>= Enum.succ)
@@ -78,83 +93,91 @@ tests = suite "Bouzuya.WeekDate" do
       wd1 = do
         od <- OrdinalDate.ordinalDate <$> y1 <*> doy1 >>= identity
         d <- pure (OrdinalDate.toDate od)
-        WeekDate.fromDate d  -- 2000-001
+        pure (WeekDate.fromDate d)  -- 2000-001
       wd2 = do
         od <- OrdinalDate.ordinalDate <$> y1 <*> doy2 >>= identity
         d <- pure (OrdinalDate.toDate od)
-        WeekDate.fromDate d  -- 2000-002
+        pure (WeekDate.fromDate d)  -- 2000-002
       wd3 = do
         od <- OrdinalDate.ordinalDate <$> y2 <*> doy1 >>= identity
         d <- pure (OrdinalDate.toDate od)
-        WeekDate.fromDate d  -- 2001-001
+        pure (WeekDate.fromDate d)  -- 2001-001
       wd4 = do
         od <- OrdinalDate.ordinalDate <$> y2 <*> doy2 >>= identity
         d <- pure (OrdinalDate.toDate od)
-        WeekDate.fromDate d  -- 2001-002
+        pure (WeekDate.fromDate d)  -- 2001-002
     Assert.assert "wd1 < wd2 < wd3 < wd4" (wd1 < wd2 && wd2 < wd3 && wd3 < wd4)
 
   test "Show WeekDate" do
-    let
-      wd = do
-        y <- Enum.succ bottom
-        d <- Date.exactDate y bottom bottom
-        WeekDate.fromDate d
     Assert.equal
-      (Just "(WeekDate (WeekYear -271819) (Week 1) Monday)")
-      (show <$> wd)
+      "(WeekDate (WeekYear -271821) (Week 53) Saturday)"
+      (show (WeekDate.fromDate bottom))
 
   test "firstWeekDateOfWeek" do
     let
-      wy = bottom
-      w = bottom
-      dow = bottom
-      wdMaybe = WeekDate.weekDate wy w dow
+      wy1 = bottom
+      w1 = top
+    Assert.equal Nothing (WeekDate.firstWeekDateOfWeek wy1 w1)
+    let
+      wy2 = Enum.succ bottom
+      w2 = bottom
     Assert.equal
-      wdMaybe
-      (Just (WeekDate.firstWeekDateOfWeek wy w))
+      (Just "(WeekDate (WeekYear -271820) (Week 1) Monday)")
+      (show <$> (wy2 >>= \wy -> WeekDate.firstWeekDateOfWeek wy w2))
+    let
+      wy3 = top
+      w3 = bottom
+    Assert.equal
+      (Just "(WeekDate (WeekYear 275760) (Week 1) Monday)")
+      (show <$> (wy3 >>= \wy -> WeekDate.firstWeekDateOfWeek wy w3))
 
   test "firstWeekDateOfWeekYear" do
-    let
-      wy = bottom
-      w = bottom
-      dow = bottom
-      wdMaybe = WeekDate.weekDate wy w dow
+    let wy1 = bottom
+    Assert.equal Nothing (WeekDate.firstWeekDateOfWeekYear wy1)
+    let wy2 = Enum.succ bottom
     Assert.equal
-      wdMaybe
-      (Just (WeekDate.firstWeekDateOfWeekYear wy))
+      (Just "(WeekDate (WeekYear -271820) (Week 1) Monday)")
+      (show <$> (wy2 >>= \wy -> WeekDate.firstWeekDateOfWeekYear wy))
+    let wy3 = top
+    Assert.equal
+      (Just "(WeekDate (WeekYear 275760) (Week 1) Monday)")
+      (show <$> (WeekDate.firstWeekDateOfWeekYear wy3))
 
   test "fromDate / toDate" do
-    let
-      d1 = do
-        y <- Enum.succ bottom
-        Date.exactDate y bottom bottom
-      d2 = do
-        y <- Enum.pred top
-        Date.exactDate y top top
-    Assert.equal d1 (WeekDate.toDate <$> (d1 >>= WeekDate.fromDate))
-    Assert.equal d2 (WeekDate.toDate <$> (d2 >>= WeekDate.fromDate))
-    Assert.equal Nothing (WeekDate.toDate <$> (WeekDate.fromDate bottom))
-    Assert.equal Nothing (WeekDate.toDate <$> (WeekDate.fromDate top))
+    Assert.equal bottom (WeekDate.toDate (WeekDate.fromDate bottom))
+    Assert.equal top (WeekDate.toDate (WeekDate.fromDate top))
 
   test "lastWeekDateOfWeek" do
     let
-      wy = bottom
-      w = bottom
-      dow = top
-      wdMaybe = WeekDate.weekDate wy w dow
+      wy1 = bottom
+      w1 = top
     Assert.equal
-      wdMaybe
-      (Just (WeekDate.lastWeekDateOfWeek wy w))
+      (Just "(WeekDate (WeekYear -271821) (Week 53) Sunday)")
+      (show <$> (WeekDate.lastWeekDateOfWeek wy1 w1))
+    let
+      wy2 = Enum.pred top
+      w2 = WeekDate.week <$> (wy2 >>= WeekDate.lastWeekDateOfWeekYear)
+    Assert.equal
+      (Just "(WeekDate (WeekYear 275759) (Week 52) Sunday)")
+      (show <$> (WeekDate.lastWeekDateOfWeek <$> wy2 <*> w2 >>= identity))
+    let
+      wy3 = top
+      w3 = bottom
+    Assert.equal
+      Nothing
+      (show <$> (WeekDate.lastWeekDateOfWeek wy3 w3))
 
   test "lastWeekDateOfWeekYear" do
-    let
-      wy = bottom
-      wMaybe = Enum.toEnum 52 -- (bottom :: WeekYear) is short year
-      dow = top
-      wdMaybe = wMaybe >>= (\w -> WeekDate.weekDate wy w dow)
+    let wy1 = bottom
     Assert.equal
-      wdMaybe
-      (Just (WeekDate.lastWeekDateOfWeekYear wy))
+      (Just "(WeekDate (WeekYear -271821) (Week 53) Sunday)")
+      (show <$> (WeekDate.lastWeekDateOfWeekYear wy1))
+    let wy2 = Enum.pred top
+    Assert.equal
+      (Just "(WeekDate (WeekYear 275759) (Week 52) Sunday)")
+      (show <$> (wy2 >>= \wy -> WeekDate.lastWeekDateOfWeekYear wy))
+    let wy3 = top
+    Assert.equal Nothing (WeekDate.lastWeekDateOfWeekYear wy3)
 
   test "weekDate (firstWeekdayOfYear)" do
     let

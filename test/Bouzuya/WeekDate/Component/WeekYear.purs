@@ -17,10 +17,10 @@ tests = suite "Bouzuya.WeekDate.Component.WeekYear" do
   test "Bounded WeekYear" do
     Assert.equal
       (Just (bottom :: WeekYear))
-      (Enum.toEnum ((Enum.fromEnum (bottom :: Year)) + 1))
+      (Enum.toEnum ((Enum.fromEnum (bottom :: Year)) - 1))
     Assert.equal
       (Just (top :: WeekYear))
-      (Enum.toEnum ((Enum.fromEnum (top :: Year)) - 1))
+      (Enum.toEnum ((Enum.fromEnum (top :: Year)) + 1))
 
   test "BoundedEnum WeekYear" do
     Assert.equal
@@ -35,17 +35,11 @@ tests = suite "Bouzuya.WeekDate.Component.WeekYear" do
       (Just (top :: WeekYear))
       (Enum.toEnum (Enum.fromEnum (top :: WeekYear)))
     Assert.equal
-      (Nothing :: Maybe WeekYear)
-      (Enum.toEnum (Enum.fromEnum (bottom :: Year)))
-    Assert.equal
       (Just (bottom :: WeekYear))
-      (Enum.toEnum ((Enum.fromEnum (bottom :: Year)) + 1))
+      (Enum.toEnum ((Enum.fromEnum (bottom :: Year)) - 1))
     Assert.equal
       (Just (top :: WeekYear))
-      (Enum.toEnum ((Enum.fromEnum (top :: Year)) - 1))
-    Assert.equal
-      (Nothing :: Maybe WeekYear)
-      (Enum.toEnum (Enum.fromEnum (top :: Year)))
+      (Enum.toEnum ((Enum.fromEnum (top :: Year)) + 1))
 
   test "Enum WeekYear" do
     Assert.equal Nothing (Enum.pred bottom :: Maybe WeekYear)

@@ -16,11 +16,11 @@ module Bouzuya.WeekDate
 
 import Bouzuya.Date.Extra as DateExtra
 import Bouzuya.OrdinalDate as OrdinalDate
-import Bouzuya.WeekDate.Component.Week (Week) as ReExportWeek
 import Bouzuya.WeekDate.Component.Week (Week)
+import Bouzuya.WeekDate.Component.Week (Week) as ReExportWeek
 import Bouzuya.WeekDate.Component.Week as Week
-import Bouzuya.WeekDate.Component.WeekYear (WeekYear) as ReExportWeekYear
 import Bouzuya.WeekDate.Component.WeekYear (WeekYear)
+import Bouzuya.WeekDate.Component.WeekYear (WeekYear) as ReExportWeekYear
 import Data.Date (Date, Month(..), Weekday)
 import Data.Date as Date
 import Data.Enum (class Enum)
@@ -33,21 +33,20 @@ import Prelude (class Bounded, class Eq, class Ord, class Show, bind, bottom, id
 data WeekDate = WeekDate WeekYear Week Weekday
 
 instance boundedWeekDate :: Bounded WeekDate where
-  bottom =
-    Unsafe.unsafePartial
-      (Maybe.fromJust do
-        y <- Enum.succ bottom
-        d <- Date.exactDate y bottom bottom
-        fromDate d)
-  top =
-    Unsafe.unsafePartial
-      (Maybe.fromJust do
-        y <- Enum.pred top
-        d <- Date.exactDate y top top
-        fromDate d)
+  -- -271821-W53
+  --     Mon Tue Wed Thu Fri Sat Sun
+  -- W53  27  28  29  30  31   1   2
+  -- W01   3   4   5   6   7   8   9
+  bottom = WeekDate bottom top Date.Saturday
+  -- 275760-W01
+  --     Mon Tue Wed Thu Fri Sat Sun
+  -- W52  24  25  26  27  28  29  30
+  -- W01  31   1   2   3   4   5   6
+  top = WeekDate top bottom Date.Monday
 
 instance enumWeekDate :: Enum WeekDate where
-  pred (WeekDate wy w wday)
+  pred wd@(WeekDate wy w wday)
+    | wd == bottom = Nothing
     | wday /= bottom = WeekDate wy w <$> Enum.pred wday
     | w /= firstWeekOfWeekYear wy = WeekDate wy <$> (Enum.pred w) <*> (pure top)
     | otherwise = do
@@ -55,7 +54,8 @@ instance enumWeekDate :: Enum WeekDate where
         pw <- pure (lastWeekOfWeekYear pwy)
         pwday <- pure top
         pure (WeekDate pwy pw pwday)
-  succ (WeekDate wy w wday)
+  succ wd@(WeekDate wy w wday)
+    | wd == top = Nothing
     | wday /= top = WeekDate wy w <$> Enum.succ wday
     | w /= lastWeekOfWeekYear wy =
         WeekDate wy <$> (Enum.succ w) <*> (pure bottom)
@@ -73,54 +73,105 @@ instance showWeekDate :: Show WeekDate where
   show (WeekDate wy w wday) =
     "(WeekDate " <> show wy <> " " <> show w <> " " <> show wday <> ")"
 
-firstWeekDateOfWeek :: WeekYear -> Week -> WeekDate
-firstWeekDateOfWeek wy w = WeekDate wy w bottom
+firstWeekDateOfWeek :: WeekYear -> Week -> Maybe WeekDate
+firstWeekDateOfWeek wy w
+  | wy == bottom = Nothing
+  | wy == top && w /= bottom = Nothing
+  | w > lastWeekOfWeekYear wy = Nothing
+  | otherwise = Just (WeekDate wy w bottom)
 
-firstWeekDateOfWeekYear :: WeekYear -> WeekDate
-firstWeekDateOfWeekYear wy = WeekDate wy bottom bottom
+firstWeekDateOfWeekYear :: WeekYear -> Maybe WeekDate
+firstWeekDateOfWeekYear wy
+  | wy == bottom = Nothing
+  | otherwise = Just (WeekDate wy bottom bottom)
 
 firstWeekOfWeekYear :: WeekYear -> Week
 firstWeekOfWeekYear _ = bottom
 
-lastWeekDateOfWeek :: WeekYear -> Week -> WeekDate
-lastWeekDateOfWeek wy w = WeekDate wy w top
+lastWeekDateOfWeek :: WeekYear -> Week -> Maybe WeekDate
+lastWeekDateOfWeek wy w
+  | wy == bottom && w /= top = Nothing
+  | wy == top = Nothing
+  | w > lastWeekOfWeekYear wy = Nothing
+  | otherwise = Just (WeekDate wy w top)
 
-lastWeekDateOfWeekYear :: WeekYear -> WeekDate
-lastWeekDateOfWeekYear wy = WeekDate wy (lastWeekOfWeekYear wy) top
+lastWeekDateOfWeekYear :: WeekYear -> Maybe WeekDate
+lastWeekDateOfWeekYear wy
+  | wy == top = Nothing
+  | otherwise = Just (WeekDate wy (lastWeekOfWeekYear wy) top)
 
 lastWeekOfWeekYear :: WeekYear -> Week
-lastWeekOfWeekYear wy =
-  let
-    mainYear = Date.year (toDate (lastWeekDateOfWeek wy bottom))
-    firstWeekday = Date.weekday (DateExtra.firstDateOfYear mainYear)
-    isLongYear =
-      (firstWeekday == Date.Thursday) ||
-        ((firstWeekday == Date.Wednesday) && (Date.isLeapYear mainYear))
-  in
-    if isLongYear then Week.lastWeekOfLongYear else Week.lastWeekOfShortYear
+lastWeekOfWeekYear wy
+  -- bottom :: WeekYear
+  -- - -271821 is not leap year
+  -- - -271821-01-01 is Thursday
+  -- - -271821-12-31 is Thursday
+  -- - last week is W53
+  | wy == bottom = Week.lastWeekOfLongYear
+  -- top :: WeekYear
+  -- - 275760 is leap year
+  -- - 275760-01-01 is Tuesday
+  -- - 275760-12-31 is Wednesday
+  -- - last week is W52
+  | wy == top = Week.lastWeekOfShortYear
+  | otherwise =
+      let
+        mainYear =
+          Unsafe.unsafePartial (Maybe.fromJust (Enum.toEnum (Enum.fromEnum wy)))
+        firstWeekday = Date.weekday (DateExtra.firstDateOfYear mainYear)
+        isLongYear =
+          (firstWeekday == Date.Thursday) ||
+            ((firstWeekday == Date.Wednesday) && (Date.isLeapYear mainYear))
+      in
+        if isLongYear then Week.lastWeekOfLongYear else Week.lastWeekOfShortYear
 
-fromDate :: Date -> Maybe WeekDate
-fromDate d = do
-  let
-    y = Date.year d
-    d0104 =
-      Unsafe.unsafePartial
-        (Maybe.fromJust
-          (Date.exactDate y January <$> (Enum.toEnum 4) >>= identity))
-  wy <- weekYearFromDate d
-  wy' <- Enum.toEnum (Enum.fromEnum y)
-  woy <-
-    if wy < wy' then pure (lastWeekOfWeekYear wy)
-      else if wy > wy' then pure (firstWeekOfWeekYear wy)
-      else
-        let
-          doyN = Enum.fromEnum (OrdinalDate.dayOfYear (OrdinalDate.fromDate d))
-          woyN = (doyN + (Enum.fromEnum (Date.weekday d0104)) - 4 - 1) / 7 + 1
-      in Enum.toEnum woyN
-  pure (WeekDate wy woy (Date.weekday d))
+fromDate :: Date -> WeekDate
+fromDate d
+  -- WeekYear == bottom
+  | (Date.year d) == bottom &&
+    (Date.month d) == bottom &&
+    (Just (Date.day d)) < (Enum.toEnum 3) =
+      WeekDate bottom top (Date.weekday d)
+  -- WeekYear == top
+  | (Date.year d) == top && (Date.month d) == top && (Date.day d) == top =
+      WeekDate top bottom (Date.weekday d)
+  | otherwise = Unsafe.unsafePartial $ Maybe.fromJust do
+      let
+        y = Date.year d
+        d0104 =
+          Unsafe.unsafePartial
+            (Maybe.fromJust
+              (Date.exactDate y January <$> (Enum.toEnum 4) >>= identity))
+        wy = Unsafe.unsafePartial (Maybe.fromJust (weekYearFromDate d))
+      wy' <- Enum.toEnum (Enum.fromEnum y)
+      woy <-
+        if wy < wy' then pure (lastWeekOfWeekYear wy)
+          else if wy > wy' then pure (firstWeekOfWeekYear wy)
+          else
+            let
+              doyN =
+                Enum.fromEnum (OrdinalDate.dayOfYear (OrdinalDate.fromDate d))
+              woyN =
+                (doyN + (Enum.fromEnum (Date.weekday d0104)) - 4 - 1) / 7 + 1
+          in Enum.toEnum woyN
+      pure (WeekDate wy woy (Date.weekday d))
 
 toDate :: WeekDate -> Date
 toDate (WeekDate wy w wday)
+  -- WeekYear == bottom
+  | wy == bottom =
+      let
+        dayMaybe =
+          if wday == Date.Saturday
+          then Enum.toEnum 1
+          else Enum.toEnum 2
+      in
+        Unsafe.unsafePartial
+          (Maybe.fromJust
+            (dayMaybe >>= Date.exactDate bottom bottom))
+  -- WeekYear == top
+  | wy == top =
+      Unsafe.unsafePartial (Maybe.fromJust (Date.exactDate top top top))
   -- 1 Mon, 2 Tue, 3 Wed, 4 Thu, 5 Fri, 6 Sat, 7 Sun
   --    29,    30,    31,     1,     2,     3,     4 (-01-04 -> 7 Sun)
   --    30,    31,     1,     2,     3,     4,     5 (-01-04 -> 6 Sat)
@@ -184,9 +235,11 @@ week :: WeekDate -> Week
 week (WeekDate _ w _) = w
 
 weekDate :: WeekYear -> Week -> Weekday -> Maybe WeekDate
-weekDate wy w wday
+weekDate wy w dow
+  | wy == bottom && (w /= top || dow < Date.Saturday) = Nothing
+  | wy == top && (w /= bottom || Date.Monday < dow) = Nothing
   | w > lastWeekOfWeekYear wy = Nothing
-  | otherwise = Just (WeekDate wy w wday)
+  | otherwise = Just (WeekDate wy w dow)
 
 weekYear :: WeekDate -> WeekYear
 weekYear (WeekDate wy _ _) = wy
@@ -203,7 +256,7 @@ weekYearFromDate d
       in
         if ((Date.day d) < (Date.day d0104)) &&
           ((Date.weekday d) > (Date.weekday d0104))
-        then (Enum.fromEnum <$> Enum.pred y) >>= Enum.toEnum
+        then Enum.toEnum ((Enum.fromEnum y) - 1)
         else Enum.toEnum (Enum.fromEnum y)
   | Date.month d == December =
       let
@@ -215,7 +268,7 @@ weekYearFromDate d
       in
         if ((Date.day d) > (Date.day d1228)) &&
           ((Date.weekday d) < (Date.weekday d1228))
-        then (Enum.fromEnum <$> Enum.succ y) >>= Enum.toEnum
+        then Enum.toEnum ((Enum.fromEnum y) + 1)
         else Enum.toEnum (Enum.fromEnum y)
   | otherwise = Enum.toEnum (Enum.fromEnum (Date.year d))
 
