@@ -2,19 +2,71 @@ module Test.Bouzuya.Date.YearMonth
   ( tests
   ) where
 
+import Bouzuya.Date.YearMonth (YearMonth)
 import Bouzuya.Date.YearMonth as YearMonth
-import Data.Date (Day)
+import Data.Date (Day, Year)
 import Data.Date as Date
 import Data.Enum as Enum
 import Data.Maybe (Maybe(..))
 import Data.Maybe as Maybe
 import Partial.Unsafe as Unsafe
-import Prelude (bind, discard, pure, (<$>), (<*>), (>>=))
+import Prelude (bind, bottom, discard, pure, show, top, unit, (*), (<), (<$>), (<*>), (<=), (>>=))
 import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 
 tests :: TestSuite
 tests = suite "Bouzuya.Date.YearMonth" do
+  test "Bounded YearMonth" do
+    Assert.equal (YearMonth.fromDate bottom) (bottom :: YearMonth)
+    Assert.equal (YearMonth.fromDate top) (top :: YearMonth)
+    Assert.assert "bottom <= top" ((bottom :: YearMonth) <= (top :: YearMonth))
+
+  test "BoundedEnum YearMonth" do
+    let
+      (Enum.Cardinality yn) = Enum.cardinality :: _ Year
+      (Enum.Cardinality ymn) = Enum.cardinality :: _ YearMonth
+    Assert.equal (yn * 12) ymn
+    Assert.equal
+      (Just (bottom :: YearMonth))
+      (Enum.toEnum (Enum.fromEnum (bottom :: YearMonth)))
+    Assert.equal
+      (Just (top :: YearMonth))
+      (Enum.toEnum (Enum.fromEnum (top :: YearMonth)))
+
+  test "Enum YearMonth" do
+    Assert.equal Nothing ((Enum.pred bottom) :: _ YearMonth)
+    Assert.equal Nothing ((Enum.succ top) :: _ YearMonth)
+    Assert.equal
+      ((Enum.toEnum 200002) :: _ YearMonth)
+      ((Enum.toEnum 200001) >>= Enum.succ)
+    Assert.equal
+      ((Enum.toEnum 200101) :: _ YearMonth)
+      ((Enum.toEnum 200012) >>= Enum.succ)
+    Assert.equal
+      ((Enum.toEnum 200001) :: _ YearMonth)
+      ((Enum.toEnum 200002) >>= Enum.pred)
+    Assert.equal
+      ((Enum.toEnum 199912) :: _ YearMonth)
+      ((Enum.toEnum 200001) >>= Enum.pred)
+
+  test "Eq YearMonth" do
+    pure unit
+
+  test "Ord YearMonth" do
+    Assert.assert
+      "YearMonth 2000-01 < WeekYear 2000-02"
+      (((Enum.toEnum 200001) :: _ YearMonth) <
+        ((Enum.toEnum 200002) :: _ YearMonth))
+    Assert.assert
+      "YearMonth 2000-02 < WeekYear 2001-01"
+      (((Enum.toEnum 200002) :: _ YearMonth) <
+        ((Enum.toEnum 200101) :: _ YearMonth))
+
+  test "Show YearMonth" do
+    Assert.equal
+      (Just "(YearMonth (Year 2000) January)")
+      (show <$> ((Enum.toEnum 200001) :: _ YearMonth))
+
   test "firstDateOfMonth" do
     Assert.equal
       do
@@ -31,7 +83,7 @@ tests = suite "Bouzuya.Date.YearMonth" do
 
   test "firstDayOfMonth" do
     Assert.equal
-      ((Enum.toEnum 1) :: Maybe Day) -- --01
+      ((Enum.toEnum 1) :: _ Day) -- --01
       do
         y <- Enum.toEnum 2000
         m <- Enum.toEnum 1
@@ -67,7 +119,7 @@ tests = suite "Bouzuya.Date.YearMonth" do
 
   test "lastDayOfMonth" do
     Assert.equal
-      ((Enum.toEnum 31) :: Maybe Day) -- --31
+      ((Enum.toEnum 31) :: _ Day) -- --31
       do
         y <- Enum.toEnum 2000
         m <- Enum.toEnum 1
@@ -75,7 +127,7 @@ tests = suite "Bouzuya.Date.YearMonth" do
         date <- Date.exactDate y m d
         pure (YearMonth.lastDayOfMonth (YearMonth.fromDate date))
     Assert.equal
-      ((Enum.toEnum 29) :: Maybe Day) -- --29 (2000 is leap year)
+      ((Enum.toEnum 29) :: _ Day) -- --29 (2000 is leap year)
       do
         y <- Enum.toEnum 2000
         m <- Enum.toEnum 2
