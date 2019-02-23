@@ -1,6 +1,10 @@
 module Bouzuya.WeekDate
   ( WeekDate
+  , firstWeekDateOfWeek
+  , firstWeekDateOfWeekYear
   , fromDate
+  , lastWeekDateOfWeek
+  , lastWeekDateOfWeekYear
   , toDate
   , week
   , weekDate
@@ -64,8 +68,20 @@ instance showWeekDate :: Show WeekDate where
   show (WeekDate wy w wday) =
     "(WeekDate " <> show wy <> " " <> show w <> " " <> show wday <> ")"
 
+firstWeekDateOfWeek :: WeekYear -> Week -> WeekDate
+firstWeekDateOfWeek wy w = WeekDate wy w bottom
+
+firstWeekDateOfWeekYear :: WeekYear -> WeekDate
+firstWeekDateOfWeekYear wy = WeekDate wy bottom bottom
+
 firstWeekOfWeekYear :: WeekYear -> Week
 firstWeekOfWeekYear _ = bottom
+
+lastWeekDateOfWeek :: WeekYear -> Week -> WeekDate
+lastWeekDateOfWeek wy w = WeekDate wy w top
+
+lastWeekDateOfWeekYear :: WeekYear -> WeekDate
+lastWeekDateOfWeekYear wy = WeekDate wy (lastWeekOfWeekYear wy) top
 
 lastWeekOfWeekYear :: WeekYear -> Week
 lastWeekOfWeekYear wy =

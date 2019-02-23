@@ -105,6 +105,26 @@ tests = suite "Bouzuya.WeekDate" do
       (Just "(WeekDate (WeekYear -271819) (Week 1) Monday)")
       (show <$> wd)
 
+  test "firstWeekDateOfWeek" do
+    let
+      wy = bottom
+      w = bottom
+      dow = bottom
+      wdMaybe = WeekDate.weekDate wy w dow
+    Assert.equal
+      wdMaybe
+      (Just (WeekDate.firstWeekDateOfWeek wy w))
+
+  test "firstWeekDateOfWeekYear" do
+    let
+      wy = bottom
+      w = bottom
+      dow = bottom
+      wdMaybe = WeekDate.weekDate wy w dow
+    Assert.equal
+      wdMaybe
+      (Just (WeekDate.firstWeekDateOfWeekYear wy))
+
   test "fromDate / toDate" do
     let
       d1 = do
@@ -117,6 +137,26 @@ tests = suite "Bouzuya.WeekDate" do
     Assert.equal d2 (WeekDate.toDate <$> (d2 >>= WeekDate.fromDate))
     Assert.equal Nothing (WeekDate.toDate <$> (WeekDate.fromDate bottom))
     Assert.equal Nothing (WeekDate.toDate <$> (WeekDate.fromDate top))
+
+  test "lastWeekDateOfWeek" do
+    let
+      wy = bottom
+      w = bottom
+      dow = top
+      wdMaybe = WeekDate.weekDate wy w dow
+    Assert.equal
+      wdMaybe
+      (Just (WeekDate.lastWeekDateOfWeek wy w))
+
+  test "lastWeekDateOfWeekYear" do
+    let
+      wy = bottom
+      wMaybe = Enum.toEnum 52 -- (bottom :: WeekYear) is short year
+      dow = top
+      wdMaybe = wMaybe >>= (\w -> WeekDate.weekDate wy w dow)
+    Assert.equal
+      wdMaybe
+      (Just (WeekDate.lastWeekDateOfWeekYear wy))
 
   test "weekDate (firstWeekdayOfYear)" do
     let
