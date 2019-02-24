@@ -2,21 +2,29 @@ module Bouzuya.WeekDate.Component.WeekYear
   ( WeekYear
   ) where
 
+import Data.Date (Year)
 import Data.Enum (class BoundedEnum, class Enum, Cardinality(..))
 import Data.Enum as Enum
 import Data.Maybe (Maybe(..))
-import Prelude (class Bounded, class Eq, class Ord, class Show, negate, otherwise, show, (&&), (+), (-), (<<<), (<=), (<>))
+import Data.Ord as Ord
+import Prelude (class Bounded, class Eq, class Ord, class Show, bottom, otherwise, show, top, (&&), (+), (-), (<<<), (<=), (<>))
 
 newtype WeekYear = WeekYear Int
 
+bottomAsInt :: Int
+bottomAsInt = ((Enum.fromEnum (bottom :: Year)) - 1) -- -271821
+
+topAsInt :: Int
+topAsInt = ((Enum.fromEnum (top :: Year)) + 1) -- 275760
+
 instance boundedWeekYear :: Bounded WeekYear where
-  bottom = WeekYear (-271821) -- -271821 == (fromEnum (bottom :: Year)) - 1
-  top = WeekYear 275760       -- 275760 == (fromEnum (top :: Year)) + 1
+  bottom = WeekYear bottomAsInt
+  top = WeekYear topAsInt
 
 instance boundedEnumWeekYear :: BoundedEnum WeekYear where
-  cardinality = Cardinality 547582
+  cardinality = Cardinality ((Ord.abs bottomAsInt) + 1 + topAsInt)
   toEnum n
-    | (-271821) <= n && n <= 275760 = Just (WeekYear n)
+    | bottomAsInt <= n && n <= topAsInt = Just (WeekYear n)
     | otherwise = Nothing
   fromEnum (WeekYear n) = n
 
