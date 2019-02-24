@@ -11,24 +11,24 @@ import Prelude (class Bounded, class Eq, class Ord, class Show, otherwise, show,
 
 newtype DayOfYear = DayOfYear Int
 
-derive newtype instance eqDayOfYear :: Eq DayOfYear
-
-derive newtype instance ordDayOfYear :: Ord DayOfYear
-
 instance boundedDayOfYear :: Bounded DayOfYear where
   bottom = DayOfYear 1
   top = DayOfYear 366
 
 instance boundedEnumDayOfYear :: BoundedEnum DayOfYear where
   cardinality = Cardinality 366
+  fromEnum (DayOfYear n) = n
   toEnum n
     | 1 <= n && n <= 366 = Just (DayOfYear n)
     | otherwise = Nothing
-  fromEnum (DayOfYear n) = n
 
 instance enumDayOfYear :: Enum DayOfYear where
-  succ = Enum.toEnum <<< (_ + 1) <<< Enum.fromEnum
   pred = Enum.toEnum <<< (_ - 1) <<< Enum.fromEnum
+  succ = Enum.toEnum <<< (_ + 1) <<< Enum.fromEnum
+
+derive newtype instance eqDayOfYear :: Eq DayOfYear
+
+derive newtype instance ordDayOfYear :: Ord DayOfYear
 
 instance showDayOfYear :: Show DayOfYear where
   show (DayOfYear n) = "(DayOfYear " <> show n <> ")"
