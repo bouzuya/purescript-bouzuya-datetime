@@ -112,6 +112,9 @@ tests = suite "Bouzuya.WeekDate" do
     Assert.equal
       "(WeekDate (WeekYear -271821) (Week 53) Saturday)"
       (show (WeekDate.fromDate bottom))
+    Assert.equal
+      "(WeekDate (WeekYear 275760) (Week 1) Monday)"
+      (show (WeekDate.fromDate top))
 
   test "firstWeekDateOfWeek" do
     let
@@ -149,13 +152,13 @@ tests = suite "Bouzuya.WeekDate" do
 
   test "lastWeekDateOfWeek" do
     let
-      wy1 = bottom
-      w1 = top
+      wy1 = bottom :: WeekYear
+      w1 = WeekDate.week <$> (WeekDate.lastWeekDateOfWeekYear wy1)
     Assert.equal
-      (Just "(WeekDate (WeekYear -271821) (Week 53) Sunday)")
-      (show <$> (WeekDate.lastWeekDateOfWeek wy1 w1))
+      (Just "(WeekDate (WeekYear -271821) (Week 52) Sunday)")
+      (show <$> (w1 >>= (WeekDate.lastWeekDateOfWeek wy1)))
     let
-      wy2 = Enum.pred top
+      wy2 = Enum.pred (top :: WeekYear)
       w2 = WeekDate.week <$> (wy2 >>= WeekDate.lastWeekDateOfWeekYear)
     Assert.equal
       (Just "(WeekDate (WeekYear 275759) (Week 52) Sunday)")
@@ -170,7 +173,7 @@ tests = suite "Bouzuya.WeekDate" do
   test "lastWeekDateOfWeekYear" do
     let wy1 = bottom
     Assert.equal
-      (Just "(WeekDate (WeekYear -271821) (Week 53) Sunday)")
+      (Just "(WeekDate (WeekYear -271821) (Week 52) Sunday)")
       (show <$> (WeekDate.lastWeekDateOfWeekYear wy1))
     let wy2 = Enum.pred top
     Assert.equal
