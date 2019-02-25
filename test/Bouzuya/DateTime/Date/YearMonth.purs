@@ -1,9 +1,9 @@
-module Test.Bouzuya.Date.YearMonth
+module Test.Bouzuya.DateTime.Date.YearMonth
   ( tests
   ) where
 
-import Bouzuya.Date.YearMonth (YearMonth)
-import Bouzuya.Date.YearMonth as YearMonth
+import Bouzuya.DateTime.Date.YearMonth (YearMonth)
+import Bouzuya.DateTime.Date.YearMonth as YearMonth
 import Data.Date (Day, Year)
 import Data.Date as Date
 import Data.Enum as Enum
@@ -15,7 +15,7 @@ import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 
 tests :: TestSuite
-tests = suite "Bouzuya.Date.YearMonth" do
+tests = suite "Bouzuya.DateTime.Date.YearMonth" do
   test "Bounded YearMonth" do
     Assert.equal (YearMonth.fromDate bottom) (bottom :: YearMonth)
     Assert.equal (YearMonth.fromDate top) (top :: YearMonth)

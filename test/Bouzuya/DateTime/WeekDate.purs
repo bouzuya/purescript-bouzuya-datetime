@@ -1,11 +1,11 @@
-module Test.Bouzuya.WeekDate
+module Test.Bouzuya.DateTime.WeekDate
   ( tests
   ) where
 
-import Bouzuya.OrdinalDate as OrdinalDate
-import Bouzuya.WeekDate (Week, WeekDate, WeekYear)
-import Bouzuya.WeekDate as WeekDate
-import Bouzuya.WeekDate.Extra as WeekDateExtra
+import Bouzuya.DateTime.OrdinalDate as OrdinalDate
+import Bouzuya.DateTime.WeekDate (Week, WeekDate, WeekYear)
+import Bouzuya.DateTime.WeekDate as WeekDate
+import Bouzuya.DateTime.WeekDate.Extra as WeekDateExtra
 import Data.Date (Date, Day, Month, Weekday(..), Year)
 import Data.Date as Date
 import Data.Enum as Enum
@@ -17,7 +17,7 @@ import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 
 tests :: TestSuite
-tests = suite "Bouzuya.WeekDate" do
+tests = suite "Bouzuya.DateTime.WeekDate" do
   test "bottom :: Date" do
     let date = bottom :: Date
     Assert.equal (bottom :: Year) (Date.year date)

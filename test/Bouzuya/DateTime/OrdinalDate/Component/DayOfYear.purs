@@ -1,9 +1,9 @@
-module Test.Bouzuya.OrdinalDate.Component.DayOfYear
+module Test.Bouzuya.DateTime.OrdinalDate.Component.DayOfYear
   ( tests
   ) where
 
-import Bouzuya.OrdinalDate (DayOfYear)
-import Bouzuya.OrdinalDate.Component.DayOfYear as DayOfYear
+import Bouzuya.DateTime.OrdinalDate (DayOfYear)
+import Bouzuya.DateTime.OrdinalDate.Component.DayOfYear as DayOfYear
 import Data.Enum as Enum
 import Data.Maybe (Maybe(..))
 import Prelude (bottom, discard, pure, show, top, unit, (<))
@@ -11,7 +11,7 @@ import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 
 tests :: TestSuite
-tests = suite "Bouzuya.OrdinalDate.Component.DayOfYear" do
+tests = suite "Bouzuya.DateTime.OrdinalDate.Component.DayOfYear" do
   test "Bounded DayOfYear" do
     Assert.equal ((Enum.toEnum 1) :: _ DayOfYear) (Just (bottom :: DayOfYear))
     Assert.equal ((Enum.toEnum 366) :: _ DayOfYear) (Just (top :: DayOfYear))

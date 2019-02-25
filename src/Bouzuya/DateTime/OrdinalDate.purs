@@ -1,4 +1,4 @@
-module Bouzuya.OrdinalDate
+module Bouzuya.DateTime.OrdinalDate
   ( OrdinalDate
   , dayOfYear
   , firstOrdinalDateOfYear
@@ -10,10 +10,10 @@ module Bouzuya.OrdinalDate
   , year
   ) where
 
-import Bouzuya.Date.Extra as DateExtra
-import Bouzuya.OrdinalDate.Component.DayOfYear (DayOfYear)
-import Bouzuya.OrdinalDate.Component.DayOfYear (DayOfYear) as ReExportDayOfYear
-import Bouzuya.OrdinalDate.Component.DayOfYear as DayOfYear
+import Bouzuya.DateTime.Date.Extra as DateExtra
+import Bouzuya.DateTime.OrdinalDate.Component.DayOfYear (DayOfYear)
+import Bouzuya.DateTime.OrdinalDate.Component.DayOfYear (DayOfYear) as ReExportDayOfYear
+import Bouzuya.DateTime.OrdinalDate.Component.DayOfYear as DayOfYear
 import Data.Array as Array
 import Data.Date (Date, Month, Year)
 import Data.Date as Date

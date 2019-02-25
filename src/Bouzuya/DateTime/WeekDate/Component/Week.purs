@@ -1,4 +1,4 @@
-module Bouzuya.WeekDate.Component.Week
+module Bouzuya.DateTime.WeekDate.Component.Week
   ( Week
   , lastWeekOfLongYear
   , lastWeekOfShortYear

@@ -1,8 +1,8 @@
-module Test.Bouzuya.Date.Extra
+module Test.Bouzuya.DateTime.Date.Extra
   ( tests
   ) where
 
-import Bouzuya.Date.Extra as DateExtra
+import Bouzuya.DateTime.Date.Extra as DateExtra
 import Data.Date as Date
 import Data.Enum as Enum
 import Data.Maybe (Maybe(..))
@@ -11,7 +11,7 @@ import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 
 tests :: TestSuite
-tests = suite "Bouzuya.Date.Extra" do
+tests = suite "Bouzuya.DateTime.Date.Extra" do
   test "firstDateOfYear" do
     y <- pure (Enum.toEnum 2000)
     d <- pure (DateExtra.firstDateOfYear <$> y)

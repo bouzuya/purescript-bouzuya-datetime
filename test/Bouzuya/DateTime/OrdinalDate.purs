@@ -1,10 +1,10 @@
-module Test.Bouzuya.OrdinalDate
+module Test.Bouzuya.DateTime.OrdinalDate
   ( tests
   ) where
 
-import Bouzuya.Date.Extra as DateExtra
-import Bouzuya.OrdinalDate (OrdinalDate)
-import Bouzuya.OrdinalDate as OrdinalDate
+import Bouzuya.DateTime.Date.Extra as DateExtra
+import Bouzuya.DateTime.OrdinalDate (OrdinalDate)
+import Bouzuya.DateTime.OrdinalDate as OrdinalDate
 import Data.Date as Date
 import Data.Enum as Enum
 import Data.Maybe (Maybe(..))
@@ -13,7 +13,7 @@ import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 
 tests :: TestSuite
-tests = suite "Bouzuya.OrdinalDate" do
+tests = suite "Bouzuya.DateTime.OrdinalDate" do
   test "Bounded OrdinalDate" do
     Assert.equal (OrdinalDate.fromDate bottom) bottom
     Assert.equal (OrdinalDate.fromDate top) top

@@ -1,7 +1,7 @@
-module Test.Bouzuya.WeekDate.Component.Week (tests) where
+module Test.Bouzuya.DateTime.WeekDate.Component.Week (tests) where
 
-import Bouzuya.WeekDate (Week)
-import Bouzuya.WeekDate.Component.Week as Week
+import Bouzuya.DateTime.WeekDate (Week)
+import Bouzuya.DateTime.WeekDate.Component.Week as Week
 import Data.Enum as Enum
 import Data.Maybe (Maybe(..))
 import Prelude (bottom, discard, pure, show, top, unit, (<))
@@ -9,7 +9,7 @@ import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 
 tests :: TestSuite
-tests = suite "Bouzuya.WeekDate.Component.Week" do
+tests = suite "Bouzuya.DateTime.WeekDate.Component.Week" do
   test "Bounded Week" do
     Assert.equal ((Enum.toEnum 1) :: _ Week) (Just (bottom :: Week))
     Assert.equal ((Enum.toEnum 53) :: _ Week) (Just (top :: Week))

@@ -1,4 +1,4 @@
-module Bouzuya.WeekDate
+module Bouzuya.DateTime.WeekDate
   ( WeekDate
   , firstWeekDateOfWeek
   , firstWeekDateOfWeekYear
@@ -14,13 +14,13 @@ module Bouzuya.WeekDate
   , weekday
   ) where
 
-import Bouzuya.Date.Extra as DateExtra
-import Bouzuya.OrdinalDate as OrdinalDate
-import Bouzuya.WeekDate.Component.Week (Week)
-import Bouzuya.WeekDate.Component.Week (Week) as ReExportWeek
-import Bouzuya.WeekDate.Component.Week as Week
-import Bouzuya.WeekDate.Component.WeekYear (WeekYear)
-import Bouzuya.WeekDate.Component.WeekYear (WeekYear) as ReExportWeekYear
+import Bouzuya.DateTime.Date.Extra as DateExtra
+import Bouzuya.DateTime.OrdinalDate as OrdinalDate
+import Bouzuya.DateTime.WeekDate.Component.Week (Week)
+import Bouzuya.DateTime.WeekDate.Component.Week (Week) as ReExportWeek
+import Bouzuya.DateTime.WeekDate.Component.Week as Week
+import Bouzuya.DateTime.WeekDate.Component.WeekYear (WeekYear)
+import Bouzuya.DateTime.WeekDate.Component.WeekYear (WeekYear) as ReExportWeekYear
 import Data.Date (Date, Month(..), Weekday, Year)
 import Data.Date as Date
 import Data.Enum (class Enum)

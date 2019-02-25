@@ -1,4 +1,4 @@
-module Bouzuya.WeekDate.Component.WeekYear
+module Bouzuya.DateTime.WeekDate.Component.WeekYear
   ( WeekYear
   ) where
 

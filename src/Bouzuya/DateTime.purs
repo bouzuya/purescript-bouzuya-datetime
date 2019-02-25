@@ -1,4 +1,4 @@
-module Bouzuya.DateTime
+module Bouzuya.DateTime.DateTime
   ( module DateTime
   ) where
 

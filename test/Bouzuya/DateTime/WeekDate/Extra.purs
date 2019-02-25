@@ -1,8 +1,8 @@
-module Test.Bouzuya.WeekDate.Extra
+module Test.Bouzuya.DateTime.WeekDate.Extra
   ( tests
   ) where
 
-import Bouzuya.WeekDate.Extra as WeekDateExtra
+import Bouzuya.DateTime.WeekDate.Extra as WeekDateExtra
 import Data.Date as Date
 import Data.Enum as Enum
 import Data.Foldable as Foldable
@@ -13,7 +13,7 @@ import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 
 tests :: TestSuite
-tests = suite "Bouzuya.WeekDate.Extra" do
+tests = suite "Bouzuya.DateTime.WeekDate.Extra" do
   test "firstWeekdayOfYear" do
     let
       date y = do

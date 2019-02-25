@@ -1,4 +1,4 @@
-module Bouzuya.OrdinalDate.Component.DayOfYear
+module Bouzuya.DateTime.OrdinalDate.Component.DayOfYear
   ( DayOfYear
   , lastDayOfYearOfLongYear
   , lastDayOfYearOfShortYear

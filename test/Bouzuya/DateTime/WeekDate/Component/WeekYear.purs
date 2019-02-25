@@ -1,8 +1,8 @@
-module Test.Bouzuya.WeekDate.Component.WeekYear
+module Test.Bouzuya.DateTime.WeekDate.Component.WeekYear
   ( tests
   ) where
 
-import Bouzuya.WeekDate.Component.WeekYear (WeekYear)
+import Bouzuya.DateTime.WeekDate.Component.WeekYear (WeekYear)
 import Data.Date (Year)
 import Data.Enum (Cardinality(..))
 import Data.Enum as Enum
@@ -13,7 +13,7 @@ import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 
 tests :: TestSuite
-tests = suite "Bouzuya.WeekDate.Component.WeekYear" do
+tests = suite "Bouzuya.DateTime.WeekDate.Component.WeekYear" do
   test "Bounded WeekYear" do
     Assert.equal
       (Just (bottom :: WeekYear))

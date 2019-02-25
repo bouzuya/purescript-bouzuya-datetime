@@ -1,4 +1,4 @@
-module Bouzuya.Date.Extra
+module Bouzuya.DateTime.Date.Extra
   ( firstDateOfYear
   , lastDateOfYear
   ) where

@@ -1,9 +1,9 @@
-module Bouzuya.WeekDate.Extra
+module Bouzuya.DateTime.WeekDate.Extra
   ( firstWeekdayOfYear
   , lastWeekdayOfYear
   ) where
 
-import Bouzuya.Date.Extra as DateExtra
+import Bouzuya.DateTime.Date.Extra as DateExtra
 import Data.Date (Weekday, Year)
 import Data.Date as Date
 
