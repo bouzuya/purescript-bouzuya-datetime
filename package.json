@@ -11,8 +11,8 @@
     "url": "https://github.com/bouzuya/purescript-bouzuya-datetime/issues"
   },
   "devDependencies": {
-    "purescript": "^0.12.2",
-    "spago": "^0.6.4"
+    "purescript": "^0.12.3",
+    "spago": "^0.7.5"
   },
   "homepage": "https://github.com/bouzuya/purescript-bouzuya-datetime#readme",
   "keywords": [],
