@@ -4,6 +4,7 @@ import Effect (Effect)
 import Prelude (Unit, discard)
 import Test.Bouzuya.DateTime.Date.Extra as DateExtra
 import Test.Bouzuya.DateTime.Date.YearMonth as DateYearMonth
+import Test.Bouzuya.DateTime.OffsetDateTime as OffsetDateTime
 import Test.Bouzuya.DateTime.OrdinalDate as OrdinalDate
 import Test.Bouzuya.DateTime.OrdinalDate.Component.DayOfYear as OrdinalDateComponentDayOfYear
 import Test.Bouzuya.DateTime.TimeZoneOffset as TimezoneOffset
@@ -17,6 +18,7 @@ main :: Effect Unit
 main = runTest do
   DateExtra.tests
   DateYearMonth.tests
+  OffsetDateTime.tests
   OrdinalDate.tests
   OrdinalDateComponentDayOfYear.tests
   TimezoneOffset.tests
