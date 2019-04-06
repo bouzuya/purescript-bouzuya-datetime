@@ -27,14 +27,17 @@ tests = suite "TimeZoneOffset" do
 
   test "Ord TimeZoneOffset" do
     Assert.assert
-      "-09:00 < +09:00"
+      "+09:00 < -09:00"
       ((TimeZoneOffset.fromDuration (Minutes (-540.0))) <
         (TimeZoneOffset.fromDuration (Minutes (540.0))))
 
   test "Show TimeZoneOffset" do
     Assert.equal
-      (Just "(TimeZoneOffset 540)")
+      (Just "(TimeZoneOffset 540)") -- -09:00
       (map show (TimeZoneOffset.fromDuration (Minutes (540.0))))
+    Assert.equal
+      (Just "(TimeZoneOffset -540)") -- +09:00
+      (map show (TimeZoneOffset.fromDuration (Minutes (-540.0))))
 
   test "fromDuration / toDuration" do
     Assert.equal

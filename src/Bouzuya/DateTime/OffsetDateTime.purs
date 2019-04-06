@@ -83,7 +83,8 @@ toLocalDateTime' offset (UTCDateTime dt) =
   map
     LocalDateTime
     (DateTime.adjust
-      (TimeZoneOffset.toDuration offset :: Milliseconds)
+      (TimeDuration.negateDuration
+        (TimeZoneOffset.toDuration offset :: Milliseconds))
       dt)
 
 toUTCDateTime :: OffsetDateTime -> DateTime
@@ -94,6 +95,5 @@ toUTCDateTime' offset (LocalDateTime dt) =
   map
     UTCDateTime
     (DateTime.adjust
-      (TimeDuration.negateDuration
-        (TimeZoneOffset.toDuration offset :: Milliseconds))
+      (TimeZoneOffset.toDuration offset :: Milliseconds)
       dt)

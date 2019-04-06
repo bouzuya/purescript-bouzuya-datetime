@@ -22,7 +22,8 @@ tests = TestUnit.suite "Bouzuya.DateTime.OffsetDateTime" do
   let
     jpOffset =
       Unsafe.unsafePartial
-        (Maybe.fromJust (TimeZoneOffset.fromDuration (TimeDuration.Hours 9.0)))
+        (Maybe.fromJust
+          (TimeZoneOffset.fromDuration (TimeDuration.Hours (-9.0))))
     utcOffset = TimeZoneOffset.utc
     dateTime1 =
       Unsafe.unsafePartial
@@ -36,15 +37,15 @@ tests = TestUnit.suite "Bouzuya.DateTime.OffsetDateTime" do
           (Parser.runParser
             "2000-01-02T06:16:17Z"
             ParserInterval.parseDateTime))
-    -- 2000-01-03T00:16:17+09:00
+    -- 2000-01-03T00:16:17+09:00 == 2000-01-02T15:16:17Z (dateTime1)
     jpOffsetDateTime1 =
       Unsafe.unsafePartial
         (Maybe.fromJust (OffsetDateTime.fromUTCDateTime jpOffset dateTime1))
-    -- 2000-01-02T15:16:17+09:00
+    -- 2000-01-02T15:16:17+09:00 == 2000-01-02T06:16:17Z (dateTime2)
     jpOffsetDateTime2 =
       Unsafe.unsafePartial
         (Maybe.fromJust (OffsetDateTime.fromUTCDateTime jpOffset dateTime2))
-    -- 2000-01-02T15:16:17+09:00
+    -- 2000-01-03T00:16:17+09:00 == 2000-01-02T15:16:17Z (dateTime1)
     jpOffsetDateTimeString1 =
       String.joinWith
         " "
@@ -56,9 +57,9 @@ tests = TestUnit.suite "Bouzuya.DateTime.OffsetDateTime" do
             , "(Date (Year 2000) January (Day 2))"
             , "(Time (Hour 15) (Minute 16) (Second 17) (Millisecond 0))))"
             ]
-        , "(TimeZoneOffset 540))"
+        , "(TimeZoneOffset -540))"
         ]
-    -- 2000-01-02T06:16:17+09:00
+    -- 2000-01-02T15:16:17+09:00 == 2000-01-02T06:16:17Z (dateTime2)
     jpOffsetDateTimeString2 =
       String.joinWith
         " "
@@ -70,7 +71,7 @@ tests = TestUnit.suite "Bouzuya.DateTime.OffsetDateTime" do
             , "(Date (Year 2000) January (Day 2))"
             , "(Time (Hour 6) (Minute 16) (Second 17) (Millisecond 0))))"
             ]
-        , "(TimeZoneOffset 540))"
+        , "(TimeZoneOffset -540))"
         ]
     -- 2000-01-02T15:16:17Z
     utcOffsetDateTimeString1 =
