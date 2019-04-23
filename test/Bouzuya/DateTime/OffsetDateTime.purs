@@ -57,7 +57,7 @@ tests = TestUnit.suite "Bouzuya.DateTime.OffsetDateTime" do
             , "(Date (Year 2000) January (Day 2))"
             , "(Time (Hour 15) (Minute 16) (Second 17) (Millisecond 0))))"
             ]
-        , "(TimeZoneOffset -540))"
+        , "(TimeZoneOffset (Minutes -540.0)))"
         ]
     -- 2000-01-02T15:16:17+09:00 == 2000-01-02T06:16:17Z (dateTime2)
     jpOffsetDateTimeString2 =
@@ -71,7 +71,7 @@ tests = TestUnit.suite "Bouzuya.DateTime.OffsetDateTime" do
             , "(Date (Year 2000) January (Day 2))"
             , "(Time (Hour 6) (Minute 16) (Second 17) (Millisecond 0))))"
             ]
-        , "(TimeZoneOffset -540))"
+        , "(TimeZoneOffset (Minutes -540.0)))"
         ]
     -- 2000-01-02T15:16:17Z
     utcOffsetDateTimeString1 =
@@ -85,7 +85,7 @@ tests = TestUnit.suite "Bouzuya.DateTime.OffsetDateTime" do
             , "(Date (Year 2000) January (Day 2))"
             , "(Time (Hour 15) (Minute 16) (Second 17) (Millisecond 0))))"
             ]
-        , "(TimeZoneOffset 0))"
+        , "(TimeZoneOffset (Minutes 0.0)))"
         ]
 
   TestUnit.test "Eq OffsetDateTime" do
