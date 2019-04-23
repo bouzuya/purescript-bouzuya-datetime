@@ -5,12 +5,13 @@ module Bouzuya.DateTime.TimeZoneOffset
   , utc
   ) where
 
-import Control.MonadZero (guard, pure)
+import Prelude
+
+import Control.MonadZero as MonadZero
 import Data.Int as Int
 import Data.Maybe (Maybe)
-import Data.Time.Duration (class Duration, Minutes(..))
+import Data.Time.Duration (class Duration, Minutes)
 import Data.Time.Duration as Duration
-import Prelude (class Bounded, class Eq, class Ord, class Show, between, bind, bottom, discard, negate, show, top, (*), (+), (<>))
 
 newtype TimeZoneOffset = TimeZoneOffset Int
 
@@ -28,14 +29,16 @@ instance showTimeZoneOffset :: Show TimeZoneOffset where
 fromDuration :: forall a. Duration a => a -> Maybe TimeZoneOffset
 fromDuration d = do
   let ms = Duration.fromDuration d
-  guard (between (toDuration bottom) (toDuration top) ms)
-  let (Minutes minutesNumber) = Duration.convertDuration ms :: Minutes
+  MonadZero.guard (between (toDuration bottom) (toDuration top) ms)
+  let
+    (Duration.Minutes minutesNumber) =
+      Duration.convertDuration ms :: Minutes
   minutesInt <- Int.fromNumber minutesNumber
   pure (TimeZoneOffset minutesInt)
 
 toDuration :: forall a. Duration a => TimeZoneOffset -> a
 toDuration (TimeZoneOffset offset) =
-  Duration.convertDuration (Minutes (Int.toNumber offset))
+  Duration.convertDuration (Duration.Minutes (Int.toNumber offset))
 
 utc :: TimeZoneOffset
 utc = TimeZoneOffset 0
