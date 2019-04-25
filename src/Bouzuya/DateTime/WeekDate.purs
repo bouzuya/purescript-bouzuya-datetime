@@ -1,7 +1,6 @@
 module Bouzuya.DateTime.WeekDate
   ( WeekDate
   , firstWeekDateOfWeek
-  , firstWeekDateOfWeekYear
   , fromDate
   , lastWeekDateOfWeek
   , lastWeekDateOfWeekYear
@@ -75,11 +74,6 @@ firstWeekDateOfWeek wy w
   | wy == top && w /= (firstWeekOfWeekYear wy) = Nothing
   | w > (Internal.lastWeekOfWeekYear wy) = Nothing
   | otherwise = Just (WeekDate wy w bottom)
-
-firstWeekDateOfWeekYear :: WeekYear -> Maybe WeekDate
-firstWeekDateOfWeekYear wy
-  | wy == bottom = Nothing
-  | otherwise = Just (WeekDate wy bottom bottom)
 
 firstWeekOfWeekYear :: WeekYear -> Week
 firstWeekOfWeekYear _ = bottom

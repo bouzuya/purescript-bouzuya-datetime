@@ -134,18 +134,6 @@ tests = suite "Bouzuya.DateTime.WeekDate" do
       (Just "(WeekDate (WeekYear 275760) (Week 1) Monday)")
       (show <$> (wy3 >>= \wy -> WeekDate.firstWeekDateOfWeek wy w3))
 
-  test "firstWeekDateOfWeekYear" do
-    let wy1 = bottom
-    Assert.equal Nothing (WeekDate.firstWeekDateOfWeekYear wy1)
-    let wy2 = Enum.succ bottom
-    Assert.equal
-      (Just "(WeekDate (WeekYear -271820) (Week 1) Monday)")
-      (show <$> (wy2 >>= \wy -> WeekDate.firstWeekDateOfWeekYear wy))
-    let wy3 = top
-    Assert.equal
-      (Just "(WeekDate (WeekYear 275760) (Week 1) Monday)")
-      (show <$> (WeekDate.firstWeekDateOfWeekYear wy3))
-
   test "fromDate / toDate" do
     Assert.equal bottom (WeekDate.toDate (WeekDate.fromDate bottom))
     Assert.equal top (WeekDate.toDate (WeekDate.fromDate top))
