@@ -24,25 +24,15 @@ instance boundedYearWeek :: Bounded YearWeek where
   bottom = fromWeekDate (bottom :: WeekDate)
   top = fromWeekDate (top :: WeekDate)
 
-bottomAsInt :: Int
-bottomAsInt =
-  ((Enum.fromEnum (bottom :: WeekYear)) * 100) +
-    (Enum.fromEnum (bottom :: Week))
-
-topAsInt :: Int
-topAsInt =
-  ((Enum.fromEnum (top :: WeekYear)) * 100) +
-    (Enum.fromEnum (Internal.lastWeekOfWeekYear (top :: WeekYear)))
-
 instance boundedEnumYearWeek :: BoundedEnum YearWeek where
   cardinality = Enum.Cardinality 28571357
+  fromEnum (YearWeek wy w) = (Enum.fromEnum wy) * 100 + (Enum.fromEnum w)
   toEnum n
     | between bottomAsInt topAsInt n = do
         wy <- Enum.toEnum (n / 100)
         w <- Enum.toEnum (n `mod` 100)
         yearWeek wy w
     | otherwise = Maybe.Nothing
-  fromEnum (YearWeek wy w) = (Enum.fromEnum wy) * 100 + (Enum.fromEnum w)
 
 instance enumYearWeek :: Enum YearWeek where
   succ (YearWeek wy w)
@@ -69,6 +59,11 @@ derive instance ordYearWeek :: Ord YearWeek
 instance showYearWeek :: Show YearWeek where
   show (YearWeek wy w) = "(YearWeek " <> show wy <> " " <> show w <> ")"
 
+bottomAsInt :: Int
+bottomAsInt =
+  ((Enum.fromEnum (bottom :: WeekYear)) * 100) +
+    (Enum.fromEnum (bottom :: Week))
+
 firstWeekDate :: YearWeek -> Maybe WeekDate
 firstWeekDate (YearWeek wy w) = WeekDate.weekDate wy w (bottom :: Weekday)
 
@@ -80,6 +75,11 @@ lastWeekDate (YearWeek wy w) = WeekDate.weekDate wy w (top :: Weekday)
 
 toWeekDate :: Weekday -> YearWeek -> Maybe WeekDate
 toWeekDate dow (YearWeek wy w) = WeekDate.weekDate wy w dow
+
+topAsInt :: Int
+topAsInt =
+  ((Enum.fromEnum (top :: WeekYear)) * 100) +
+    (Enum.fromEnum (Internal.lastWeekOfWeekYear (top :: WeekYear)))
 
 yearWeek :: WeekYear -> Week -> Maybe YearWeek
 yearWeek wy w

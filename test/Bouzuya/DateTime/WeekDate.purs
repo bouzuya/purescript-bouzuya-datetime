@@ -13,10 +13,8 @@ import Data.Enum as Enum
 import Data.Foldable as Foldable
 import Data.Maybe (Maybe(..))
 import Data.Tuple.Nested as TupleNested
-import Debug.Trace as Debug
 import Prelude (bind, negate, bottom, discard, identity, join, pure, show, top, unit, (&&), (-), (<), (<$>), (<*>), (<<<), (==), (>>=))
 import Test.Unit (TestSuite, suite, test)
-import Test.Unit as TestUnit
 import Test.Unit.Assert as Assert
 
 tests :: TestSuite

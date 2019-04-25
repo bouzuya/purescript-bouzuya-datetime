@@ -4,22 +4,23 @@ module Bouzuya.DateTime.WeekDate.Component.Week
   , lastWeekOfShortYear
   ) where
 
+import Prelude
+
 import Data.Enum (class BoundedEnum, class Enum)
 import Data.Enum as Enum
 import Data.Maybe (Maybe(..))
-import Prelude (class Bounded, class Eq, class Ord, class Show, otherwise, show, (&&), (+), (-), (<<<), (<=), (<>))
 
 newtype Week = Week Int
 
 instance boundedWeek :: Bounded Week where
-  bottom = Week 1
-  top = Week 53
+  bottom = Week bottomAsInt
+  top = Week topAsInt
 
 instance boundedEnumWeek :: BoundedEnum Week where
   cardinality = Enum.Cardinality 53
   fromEnum (Week n) = n
   toEnum n
-    | 1 <= n && n <= 53 = Just (Week n)
+    | between bottomAsInt topAsInt n = Just (Week n)
     | otherwise = Nothing
 
 instance enumWeek :: Enum Week where
@@ -33,8 +34,14 @@ derive newtype instance ordWeek :: Ord Week
 instance showWeek :: Show Week where
   show (Week n) = "(Week " <> show n <> ")"
 
+bottomAsInt :: Int
+bottomAsInt = 1
+
 lastWeekOfLongYear :: Week
 lastWeekOfLongYear = Week 53
 
 lastWeekOfShortYear :: Week
 lastWeekOfShortYear = Week 52
+
+topAsInt :: Int
+topAsInt = 53

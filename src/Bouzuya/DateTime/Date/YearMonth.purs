@@ -9,6 +9,8 @@ module Bouzuya.DateTime.Date.YearMonth
   , yearMonth
   ) where
 
+import Prelude
+
 import Data.Date (Date, Day, Month, Year)
 import Data.Date as Date
 import Data.Enum (class BoundedEnum, class Enum)
@@ -16,7 +18,6 @@ import Data.Enum as Enum
 import Data.Maybe (Maybe(..))
 import Data.Maybe as Maybe
 import Partial.Unsafe as Unsafe
-import Prelude (class Bounded, class Eq, class Ord, class Show, bind, bottom, mod, negate, otherwise, pure, show, top, (&&), (*), (+), (/), (/=), (<=), (<>))
 
 data YearMonth = YearMonth Year Month
 
@@ -26,13 +27,13 @@ instance boundedYearMonth :: Bounded YearMonth where
 
 instance boundedEnumYearMonth :: BoundedEnum YearMonth where
   cardinality = Enum.Cardinality 6570960
+  fromEnum (YearMonth y m) = (Enum.fromEnum y) * 100 + (Enum.fromEnum m)
   toEnum n
-    | ((-271820) * 100 + 1) <= n && n <= (275759 * 100 + 12) = do
+    | between bottomAsInt topAsInt n = do
         y <- Enum.toEnum (n / 100)
         m <- Enum.toEnum (n `mod` 100)
         pure (YearMonth y m)
     | otherwise = Nothing
-  fromEnum (YearMonth y m) = (Enum.fromEnum y) * 100 + (Enum.fromEnum m)
 
 instance enumYearMonth :: Enum YearMonth where
   succ (YearMonth y m)
@@ -57,6 +58,10 @@ derive instance ordYearMonth :: Ord YearMonth
 instance showYearMonth :: Show YearMonth where
   show (YearMonth y m) = "(YearMonth " <> show y <> " " <> show m <> ")"
 
+bottomAsInt :: Int
+bottomAsInt =
+  ((Enum.fromEnum (bottom :: Year)) * 100) + (Enum.fromEnum (bottom :: Month))
+
 firstDateOfMonth :: YearMonth -> Date
 firstDateOfMonth (YearMonth y m) =
   Unsafe.unsafePartial (Maybe.fromJust (Date.exactDate y m bottom))
@@ -77,6 +82,10 @@ lastDayOfMonth (YearMonth y m) = Date.lastDayOfMonth y m
 
 toDate :: Day -> YearMonth -> Maybe Date
 toDate day (YearMonth y m) = Date.exactDate y m day
+
+topAsInt :: Int
+topAsInt =
+  ((Enum.fromEnum (top :: Year)) * 100) + (Enum.fromEnum (top :: Month))
 
 yearMonth :: Year -> Month -> YearMonth
 yearMonth = YearMonth
