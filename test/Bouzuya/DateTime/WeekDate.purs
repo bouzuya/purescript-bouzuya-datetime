@@ -6,14 +6,17 @@ import Bouzuya.DateTime.OrdinalDate as OrdinalDate
 import Bouzuya.DateTime.WeekDate (Week, WeekDate, WeekYear)
 import Bouzuya.DateTime.WeekDate as WeekDate
 import Bouzuya.DateTime.WeekDate.Extra as WeekDateExtra
+import Bouzuya.DateTime.WeekDate.Interval.WeekYear as WeekYear
 import Data.Date (Date, Day, Month, Weekday(..), Year)
 import Data.Date as Date
 import Data.Enum as Enum
 import Data.Foldable as Foldable
 import Data.Maybe (Maybe(..))
 import Data.Tuple.Nested as TupleNested
+import Debug.Trace as Debug
 import Prelude (bind, negate, bottom, discard, identity, join, pure, show, top, unit, (&&), (-), (<), (<$>), (<*>), (<<<), (==), (>>=))
 import Test.Unit (TestSuite, suite, test)
+import Test.Unit as TestUnit
 import Test.Unit.Assert as Assert
 
 tests :: TestSuite
@@ -143,13 +146,13 @@ tests = suite "Bouzuya.DateTime.WeekDate" do
   test "lastWeekDateOfWeek" do
     let
       wy1 = bottom :: WeekYear
-      w1 = WeekDate.week <$> (WeekDate.lastWeekDateOfWeekYear wy1)
+      w1 = WeekDate.week <$> (WeekYear.lastWeekDate wy1)
     Assert.equal
       (Just "(WeekDate (WeekYear -271821) (Week 52) Sunday)")
       (show <$> (w1 >>= (WeekDate.lastWeekDateOfWeek wy1)))
     let
       wy2 = Enum.pred (top :: WeekYear)
-      w2 = WeekDate.week <$> (wy2 >>= WeekDate.lastWeekDateOfWeekYear)
+      w2 = WeekDate.week <$> (wy2 >>= WeekYear.lastWeekDate)
     Assert.equal
       (Just "(WeekDate (WeekYear 275759) (Week 52) Sunday)")
       (show <$> (WeekDate.lastWeekDateOfWeek <$> wy2 <*> w2 >>= identity))
@@ -159,18 +162,6 @@ tests = suite "Bouzuya.DateTime.WeekDate" do
     Assert.equal
       Nothing
       (show <$> (WeekDate.lastWeekDateOfWeek wy3 w3))
-
-  test "lastWeekDateOfWeekYear" do
-    let wy1 = bottom
-    Assert.equal
-      (Just "(WeekDate (WeekYear -271821) (Week 52) Sunday)")
-      (show <$> (WeekDate.lastWeekDateOfWeekYear wy1))
-    let wy2 = Enum.pred top
-    Assert.equal
-      (Just "(WeekDate (WeekYear 275759) (Week 52) Sunday)")
-      (show <$> (wy2 >>= \wy -> WeekDate.lastWeekDateOfWeekYear wy))
-    let wy3 = top
-    Assert.equal Nothing (WeekDate.lastWeekDateOfWeekYear wy3)
 
   test "weekDate (firstWeekdayOfYear)" do
     let

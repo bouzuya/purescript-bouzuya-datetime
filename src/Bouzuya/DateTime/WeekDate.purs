@@ -3,7 +3,6 @@ module Bouzuya.DateTime.WeekDate
   , firstWeekDateOfWeek
   , fromDate
   , lastWeekDateOfWeek
-  , lastWeekDateOfWeekYear
   , module ReExportWeek
   , module ReExportWeekYear
   , toDate
@@ -121,11 +120,6 @@ lastWeekDateOfWeek wy w
   | wy == top = Nothing
   | w > (Internal.lastWeekOfWeekYear wy) = Nothing
   | otherwise = Just (WeekDate wy w top)
-
-lastWeekDateOfWeekYear :: WeekYear -> Maybe WeekDate
-lastWeekDateOfWeekYear wy
-  | wy == top = Nothing
-  | otherwise = Just (WeekDate wy (Internal.lastWeekOfWeekYear wy) top)
 
 toDate :: WeekDate -> Date
 toDate (WeekDate wy w wday)

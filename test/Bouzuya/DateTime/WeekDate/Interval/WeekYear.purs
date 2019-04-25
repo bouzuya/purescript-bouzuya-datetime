@@ -8,6 +8,7 @@ import Bouzuya.DateTime.WeekDate (WeekYear)
 import Bouzuya.DateTime.WeekDate.Interval.WeekYear as WeekYear
 import Data.Enum as Enum
 import Data.Maybe as Maybe
+import Debug.Trace as Debug
 import Test.Unit (TestSuite)
 import Test.Unit as TestUnit
 import Test.Unit.Assert as Assert
@@ -26,3 +27,15 @@ tests = TestUnit.suite "Bouzuya.DateTime.WeekDate.Interval.WeekYear" do
     Assert.equal
       (Maybe.Just "(WeekDate (WeekYear 275760) (Week 1) Monday)")
       (show <$> (WeekYear.firstWeekDate wy3))
+
+  TestUnit.test "lastWeekDate" do
+    let wy1 = bottom
+    Assert.equal
+      (Maybe.Just "(WeekDate (WeekYear -271821) (Week 52) Sunday)")
+      (show <$> (WeekYear.lastWeekDate wy1))
+    let wy2 = Enum.pred top
+    Assert.equal
+      (Maybe.Just "(WeekDate (WeekYear 275759) (Week 52) Sunday)")
+      (show <$> (wy2 >>= \wy -> WeekYear.lastWeekDate wy))
+    let wy3 = top
+    Assert.equal Maybe.Nothing (WeekYear.lastWeekDate wy3)
