@@ -80,7 +80,7 @@ firstWeekOfWeekYear _ = bottom
 
 fromDate :: Date -> WeekDate
 fromDate d
-  -- -271821-W52
+  -- -271821-W52 .. -271820-W01
   --     Mon Tue Wed Thu Fri Sat Sun
   -- W52  27  28  29  30  31   1   2
   -- W01   3   4   5   6   7   8   9
@@ -88,7 +88,7 @@ fromDate d
   | ((Date.year d) == bottom) &&
     ((Date.month d) == bottom) &&
     ((Just (Date.day d)) < (Enum.toEnum 3)) =
-      WeekDate bottom top (Date.weekday d)
+      WeekDate bottom (Internal.lastWeekOfWeekYear bottom) (Date.weekday d)
 
   -- 275760-W01
   --     Mon Tue Wed Thu Fri Sat Sun
@@ -206,7 +206,8 @@ week (WeekDate _ w _) = w
 
 weekDate :: WeekYear -> Week -> Weekday -> Maybe WeekDate
 weekDate wy w dow
-  | wy == bottom && (w /= top || dow < Date.Saturday) = Nothing
+  | wy == bottom &&
+    (w /= (Internal.lastWeekOfWeekYear wy) || dow < Date.Saturday) = Nothing
   | wy == top && (w /= bottom || Date.Monday < dow) = Nothing
   | w > Internal.lastWeekOfWeekYear wy = Nothing
   | otherwise = Just (WeekDate wy w dow)

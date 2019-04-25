@@ -19,6 +19,7 @@ import Test.Unit.Assert as Assert
 tests :: TestSuite
 tests = suite "Bouzuya.DateTime.WeekDate" do
   test "bottom :: Date" do
+    -- -271820-01-01
     let date = bottom :: Date
     Assert.equal (bottom :: Year) (Date.year date)
     Assert.equal ((Enum.toEnum (-271820)) :: _ Year) (Just (bottom :: Year))
@@ -30,6 +31,7 @@ tests = suite "Bouzuya.DateTime.WeekDate" do
     Assert.equal Date.Saturday (Date.weekday date)
 
   test "top :: Date" do
+    -- 275759-12-31
     let date = top :: Date
     Assert.equal (top :: Year) (Date.year date)
     Assert.equal ((Enum.toEnum 275759) :: _ Year) (Just (top :: Year))
@@ -41,8 +43,8 @@ tests = suite "Bouzuya.DateTime.WeekDate" do
     Assert.equal Date.Monday (Date.weekday date)
 
   test "Bounded WeekDate" do
-    Assert.equal (WeekDate.fromDate bottom) (bottom :: WeekDate)
-    Assert.equal (WeekDate.fromDate top) (top :: WeekDate)
+    Assert.equal (WeekDate.fromDate (bottom :: Date)) (bottom :: WeekDate)
+    Assert.equal (WeekDate.fromDate (top :: Date)) (top :: WeekDate)
 
   test "Enum WeekDate" do
     Assert.equal Nothing (Enum.pred bottom :: Maybe WeekDate)
@@ -110,7 +112,7 @@ tests = suite "Bouzuya.DateTime.WeekDate" do
 
   test "Show WeekDate" do
     Assert.equal
-      "(WeekDate (WeekYear -271821) (Week 53) Saturday)"
+      "(WeekDate (WeekYear -271821) (Week 52) Saturday)"
       (show (WeekDate.fromDate bottom))
     Assert.equal
       "(WeekDate (WeekYear 275760) (Week 1) Monday)"
