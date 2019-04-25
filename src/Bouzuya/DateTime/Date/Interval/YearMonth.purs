@@ -1,4 +1,4 @@
-module Bouzuya.DateTime.Date.YearMonth
+module Bouzuya.DateTime.Date.Interval.YearMonth
   ( YearMonth
   , firstDateOfMonth
   , firstDayOfMonth
