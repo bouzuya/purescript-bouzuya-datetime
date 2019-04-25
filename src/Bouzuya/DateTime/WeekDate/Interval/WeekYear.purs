@@ -1,5 +1,6 @@
 module Bouzuya.DateTime.WeekDate.Interval.WeekYear
   ( firstWeekDate -- start week date
+  , fromWeekDate
   , lastWeekDate  -- end week date
   ) where
 
@@ -12,6 +13,9 @@ import Data.Maybe (Maybe)
 
 firstWeekDate :: WeekYear -> Maybe WeekDate
 firstWeekDate wy = WeekDate.weekDate wy bottom bottom
+
+fromWeekDate :: WeekDate -> WeekYear
+fromWeekDate = WeekDate.weekYear
 
 lastWeekDate :: WeekYear -> Maybe WeekDate
 lastWeekDate wy = WeekDate.weekDate wy (Internal.lastWeekOfWeekYear wy) top
