@@ -13,6 +13,7 @@ import Test.Bouzuya.DateTime.WeekDate.Component.Week as WeekDateComponentWeek
 import Test.Bouzuya.DateTime.WeekDate.Component.WeekYear as WeekDateComponentWeekYear
 import Test.Bouzuya.DateTime.WeekDate.Extra as WeekDateExtra
 import Test.Bouzuya.DateTime.WeekDate.Interval.WeekYear as WeekDateIntervalWeekYear
+import Test.Bouzuya.DateTime.WeekDate.Interval.YearWeek as WeekDateIntervalYearWeek
 import Test.Unit.Main (runTest)
 
 main :: Effect Unit
@@ -28,3 +29,4 @@ main = runTest do
   WeekDateComponentWeekYear.tests
   WeekDateExtra.tests
   WeekDateIntervalWeekYear.tests
+  WeekDateIntervalYearWeek.tests
