@@ -20,7 +20,7 @@ import Test.Unit.Assert as Assert
 tests :: TestSuite
 tests = suite "Bouzuya.DateTime.WeekDate" do
   test "bottom :: Date" do
-    -- -271820-01-01
+    -- -271820-01-01 (Sat)
     let date = bottom :: Date
     Assert.equal (bottom :: Year) (Date.year date)
     Assert.equal ((Enum.toEnum (-271820)) :: _ Year) (Just (bottom :: Year))
@@ -32,7 +32,7 @@ tests = suite "Bouzuya.DateTime.WeekDate" do
     Assert.equal Date.Saturday (Date.weekday date)
 
   test "top :: Date" do
-    -- 275759-12-31
+    -- 275759-12-31 (Mon)
     let date = top :: Date
     Assert.equal (top :: Year) (Date.year date)
     Assert.equal ((Enum.toEnum 275759) :: _ Year) (Just (top :: Year))
@@ -114,10 +114,10 @@ tests = suite "Bouzuya.DateTime.WeekDate" do
   test "Show WeekDate" do
     Assert.equal
       "(WeekDate (WeekYear -271821) (Week 52) Saturday)"
-      (show (WeekDate.fromDate bottom))
+      (show (bottom :: WeekDate))
     Assert.equal
       "(WeekDate (WeekYear 275760) (Week 1) Monday)"
-      (show (WeekDate.fromDate top))
+      (show (top :: WeekDate))
 
   test "fromDate / toDate" do
     Assert.equal bottom (WeekDate.toDate (WeekDate.fromDate bottom))
@@ -146,6 +146,7 @@ tests = suite "Bouzuya.DateTime.WeekDate" do
             s
             (join (Date.exactDate <$> Enum.toEnum (y - o) <*> Enum.toEnum m <*> Enum.toEnum d))
             (Enum.toEnum y >>= \y' -> exactDateFromWeek y' bottom bottom)))
+
   test "weekDate" do
     Foldable.for_
       [ TupleNested.tuple7 "--01-04/--12-28 (1)" 2004 1 4 2004 1 Sunday

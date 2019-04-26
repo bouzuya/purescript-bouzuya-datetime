@@ -183,10 +183,11 @@ week (WeekDate _ w _) = w
 
 weekDate :: WeekYear -> Week -> Weekday -> Maybe WeekDate
 weekDate wy w dow
-  | wy == bottom &&
-    (w /= (Internal.lastWeekOfWeekYear wy) || dow < Date.Saturday) = Nothing
-  | wy == top && (w /= bottom || Date.Monday < dow) = Nothing
-  | w > Internal.lastWeekOfWeekYear wy = Nothing
+  | ((wy == bottom) &&
+      (w /= (Internal.lastWeekOfWeekYear wy) || dow < Date.Saturday)) ||
+    ((wy == top) &&
+      (w /= (Internal.firstWeekOfWeekYear wy) || dow > Date.Monday)) ||
+    (w > (Internal.lastWeekOfWeekYear wy)) = Nothing
   | otherwise = Just (WeekDate wy w dow)
 
 weekYear :: WeekDate -> WeekYear
