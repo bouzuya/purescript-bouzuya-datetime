@@ -2,7 +2,7 @@ module Test.Bouzuya.DateTime.OrdinalDate
   ( tests
   ) where
 
-import Bouzuya.DateTime.Date.Extra as DateExtra
+import Bouzuya.DateTime.Date.Interval.Year as Year
 import Bouzuya.DateTime.OrdinalDate (OrdinalDate)
 import Bouzuya.DateTime.OrdinalDate as OrdinalDate
 import Data.Date as Date
@@ -67,7 +67,7 @@ tests = suite "Bouzuya.DateTime.OrdinalDate" do
       (OrdinalDate.ordinalDate <$> y1 <*> (pure bottom) >>= identity)
       (OrdinalDate.firstOrdinalDateOfYear <$> y1)
     Assert.equal
-      ((OrdinalDate.fromDate <<< DateExtra.firstDateOfYear) <$> y1)
+      ((OrdinalDate.fromDate <<< Year.firstDate) <$> y1)
       (OrdinalDate.firstOrdinalDateOfYear <$> y1)
 
   test "fromDate / toDate" do
@@ -86,7 +86,7 @@ tests = suite "Bouzuya.DateTime.OrdinalDate" do
       (OrdinalDate.fromDate <$> d20001231)
       (OrdinalDate.lastOrdinalDateOfYear <$> y1)
     Assert.equal
-      ((OrdinalDate.fromDate <<< DateExtra.lastDateOfYear) <$> y1)
+      ((OrdinalDate.fromDate <<< Year.lastDate) <$> y1)
       (OrdinalDate.lastOrdinalDateOfYear <$> y1)
     Assert.equal
       (Enum.toEnum 366)
@@ -102,7 +102,7 @@ tests = suite "Bouzuya.DateTime.OrdinalDate" do
       (OrdinalDate.fromDate <$> d20011231)
       (OrdinalDate.lastOrdinalDateOfYear <$> y2)
     Assert.equal
-      ((OrdinalDate.fromDate <<< DateExtra.lastDateOfYear) <$> y2)
+      ((OrdinalDate.fromDate <<< Year.lastDate) <$> y2)
       (OrdinalDate.lastOrdinalDateOfYear <$> y2)
     Assert.equal
       (Enum.toEnum 365)

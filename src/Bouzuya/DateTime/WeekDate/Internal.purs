@@ -4,7 +4,7 @@ module Bouzuya.DateTime.WeekDate.Internal
 
 import Prelude
 
-import Bouzuya.DateTime.Date.Extra as DateExtra
+import Bouzuya.DateTime.Date.Interval.Year as Year
 import Bouzuya.DateTime.WeekDate.Component.Week (Week)
 import Bouzuya.DateTime.WeekDate.Component.Week as Week
 import Bouzuya.DateTime.WeekDate.Component.WeekYear (WeekYear)
@@ -31,7 +31,7 @@ lastWeekOfWeekYear wy =
             Unsafe.unsafePartial
               (Maybe.fromJust (Enum.toEnum (Enum.fromEnum wy)))
         in
-          { firstWeekday: Date.weekday (DateExtra.firstDateOfYear y)
+          { firstWeekday: Date.weekday (Year.firstDate y)
           , isLeapYear: Date.isLeapYear y
           }
     isLongYear =

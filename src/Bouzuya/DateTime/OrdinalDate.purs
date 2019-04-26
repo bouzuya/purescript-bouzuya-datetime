@@ -10,7 +10,7 @@ module Bouzuya.DateTime.OrdinalDate
   , year
   ) where
 
-import Bouzuya.DateTime.Date.Extra as DateExtra
+import Bouzuya.DateTime.Date.Interval.Year as Year
 import Bouzuya.DateTime.OrdinalDate.Component.DayOfYear (DayOfYear)
 import Bouzuya.DateTime.OrdinalDate.Component.DayOfYear (DayOfYear) as ReExportDayOfYear
 import Bouzuya.DateTime.OrdinalDate.Component.DayOfYear as DayOfYear
@@ -60,7 +60,7 @@ dayOfYear (OrdinalDate _ doy) = doy
 dayOfYearFromDate :: Date -> DayOfYear
 dayOfYearFromDate d =
   let
-    (Days n) = Date.diff d (DateExtra.firstDateOfYear (Date.year d))
+    (Days n) = Date.diff d (Year.firstDate (Date.year d))
     doy = (Int.fromNumber n) >>= Enum.succ >>= Enum.toEnum
   in Unsafe.unsafePartial (Maybe.fromJust doy)
 
