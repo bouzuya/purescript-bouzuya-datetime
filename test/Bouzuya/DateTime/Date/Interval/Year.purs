@@ -2,11 +2,12 @@ module Test.Bouzuya.DateTime.Date.Interval.Year
   ( tests
   ) where
 
+import Prelude
+
 import Bouzuya.DateTime.Date.Interval.Year as Year
 import Data.Date as Date
 import Data.Enum as Enum
 import Data.Maybe (Maybe(..))
-import Prelude (bind, bottom, discard, pure, top, (<$>))
 import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 

@@ -2,6 +2,8 @@ module Test.Bouzuya.DateTime.WeekDate
   ( tests
   ) where
 
+import Prelude
+
 import Bouzuya.DateTime.Date.Interval.Year as Year
 import Bouzuya.DateTime.OrdinalDate as OrdinalDate
 import Bouzuya.DateTime.WeekDate (Week, WeekDate, WeekYear)
@@ -13,7 +15,6 @@ import Data.Enum as Enum
 import Data.Foldable as Foldable
 import Data.Maybe (Maybe(..))
 import Data.Tuple.Nested as TupleNested
-import Prelude (bind, negate, bottom, discard, identity, join, pure, show, top, unit, (&&), (-), (<), (<$>), (<*>), (<<<), (==), (>>=))
 import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 

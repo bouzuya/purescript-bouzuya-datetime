@@ -12,6 +12,8 @@ module Bouzuya.DateTime.WeekDate
   , weekday
   ) where
 
+import Prelude
+
 import Bouzuya.DateTime.OrdinalDate as OrdinalDate
 import Bouzuya.DateTime.WeekDate.Component.Week (Week)
 import Bouzuya.DateTime.WeekDate.Component.Week (Week) as ReExportWeek
@@ -25,7 +27,6 @@ import Data.Enum as Enum
 import Data.Maybe (Maybe(..))
 import Data.Maybe as Maybe
 import Partial.Unsafe as Unsafe
-import Prelude (class Bounded, class Eq, class Ord, class Show, bind, bottom, identity, otherwise, pure, show, top, ($), (&&), (*), (+), (-), (/), (/=), (<), (<$>), (<*>), (<=), (<>), (==), (>), (>>=), (||))
 
 data WeekDate = WeekDate WeekYear Week Weekday
 

@@ -1,7 +1,8 @@
 module Test.Main (main) where
 
+import Prelude
+
 import Effect (Effect)
-import Prelude (Unit, discard)
 import Test.Bouzuya.DateTime.Date.Interval.Year as DateIntervalYear
 import Test.Bouzuya.DateTime.Date.Interval.YearMonth as DateIntervalYearMonth
 import Test.Bouzuya.DateTime.OffsetDateTime as OffsetDateTime

@@ -2,13 +2,14 @@ module Test.Bouzuya.DateTime.WeekDate.Component.WeekYear
   ( tests
   ) where
 
+import Prelude
+
 import Bouzuya.DateTime.WeekDate.Component.WeekYear (WeekYear)
 import Data.Date (Year)
 import Data.Enum (Cardinality(..))
 import Data.Enum as Enum
 import Data.Maybe (Maybe(..))
 import Data.Ord as Ord
-import Prelude (bottom, discard, pure, show, top, unit, (+), (-), (<), (<$>), (>>=))
 import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 

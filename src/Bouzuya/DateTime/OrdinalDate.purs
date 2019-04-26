@@ -10,6 +10,8 @@ module Bouzuya.DateTime.OrdinalDate
   , year
   ) where
 
+import Prelude
+
 import Bouzuya.DateTime.Date.Interval.Year as Year
 import Bouzuya.DateTime.OrdinalDate.Component.DayOfYear (DayOfYear)
 import Bouzuya.DateTime.OrdinalDate.Component.DayOfYear (DayOfYear) as ReExportDayOfYear
@@ -25,7 +27,6 @@ import Data.Maybe (Maybe(..))
 import Data.Maybe as Maybe
 import Data.Time.Duration (Days(..))
 import Partial.Unsafe as Unsafe
-import Prelude (class Bounded, class Eq, class Ord, class Show, bind, bottom, map, otherwise, show, top, (-), (<$>), (<*>), (<<<), (<>), (==), (>), (>>=))
 
 data OrdinalDate = OrdinalDate Year DayOfYear
 

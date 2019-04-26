@@ -2,11 +2,12 @@ module Test.Bouzuya.DateTime.OrdinalDate.Component.DayOfYear
   ( tests
   ) where
 
+import Prelude
+
 import Bouzuya.DateTime.OrdinalDate (DayOfYear)
 import Bouzuya.DateTime.OrdinalDate.Component.DayOfYear as DayOfYear
 import Data.Enum as Enum
 import Data.Maybe (Maybe(..))
-import Prelude (bottom, discard, pure, show, top, unit, (<))
 import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 

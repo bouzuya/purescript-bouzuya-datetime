@@ -2,6 +2,8 @@ module Test.Bouzuya.DateTime.Date.Interval.YearMonth
   ( tests
   ) where
 
+import Prelude
+
 import Bouzuya.DateTime.Date.Interval.YearMonth (YearMonth)
 import Bouzuya.DateTime.Date.Interval.YearMonth as YearMonth
 import Data.Date (Day, Year)
@@ -10,7 +12,6 @@ import Data.Enum as Enum
 import Data.Maybe (Maybe(..))
 import Data.Maybe as Maybe
 import Partial.Unsafe as Unsafe
-import Prelude (bind, bottom, discard, pure, show, top, unit, (*), (<), (<$>), (<*>), (<=), (>>=))
 import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 

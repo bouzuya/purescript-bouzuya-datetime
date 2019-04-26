@@ -2,13 +2,14 @@ module Test.Bouzuya.DateTime.OrdinalDate
   ( tests
   ) where
 
+import Prelude
+
 import Bouzuya.DateTime.Date.Interval.Year as Year
 import Bouzuya.DateTime.OrdinalDate (OrdinalDate)
 import Bouzuya.DateTime.OrdinalDate as OrdinalDate
 import Data.Date as Date
 import Data.Enum as Enum
 import Data.Maybe (Maybe(..))
-import Prelude (bind, bottom, discard, identity, map, pure, top, unit, (&&), (<), (<$>), (<*>), (<<<), (>>=))
 import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 

@@ -1,10 +1,11 @@
 module Test.Bouzuya.DateTime.WeekDate.Component.Week (tests) where
 
+import Prelude
+
 import Bouzuya.DateTime.WeekDate (Week)
 import Bouzuya.DateTime.WeekDate.Component.Week as Week
 import Data.Enum as Enum
 import Data.Maybe (Maybe(..))
-import Prelude (bottom, discard, pure, show, top, unit, (<))
 import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 
