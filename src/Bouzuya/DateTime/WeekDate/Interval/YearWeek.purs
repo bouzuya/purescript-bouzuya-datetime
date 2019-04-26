@@ -42,10 +42,10 @@ instance enumYearWeek :: Enum YearWeek where
         pure (YearWeek wy w')
     | otherwise = do
         wy' <- Enum.succ wy
-        pure (YearWeek wy' (bottom :: Week))
+        pure (YearWeek wy' (Internal.firstWeekOfWeekYear wy))
   pred (YearWeek wy w)
     | wy == (bottom :: WeekYear) = Maybe.Nothing
-    | w /= (bottom :: Week) = do
+    | w /= (Internal.firstWeekOfWeekYear wy) = do
         w' <- Enum.pred w
         pure (YearWeek wy w')
     | otherwise = do
@@ -83,8 +83,7 @@ topAsInt =
 
 yearWeek :: WeekYear -> Week -> Maybe YearWeek
 yearWeek wy w
-  | (wy == (bottom :: WeekYear)) &&
-    (w /= (Internal.lastWeekOfWeekYear wy)) = Maybe.Nothing
-  | (wy == (top :: WeekYear)) && (w /= bottom) = Maybe.Nothing
-  | w > (Internal.lastWeekOfWeekYear wy) = Maybe.Nothing
+  | ((wy == (bottom :: WeekYear)) && (w /= (Internal.lastWeekOfWeekYear wy))) ||
+    ((wy == (top :: WeekYear)) && (w /= (Internal.firstWeekOfWeekYear wy))) ||
+    (w > (Internal.lastWeekOfWeekYear wy)) = Maybe.Nothing
   | otherwise = Maybe.Just (YearWeek wy w)

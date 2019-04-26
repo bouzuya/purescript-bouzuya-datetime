@@ -1,5 +1,6 @@
 module Bouzuya.DateTime.WeekDate.Internal
-  ( lastWeekOfWeekYear
+  ( firstWeekOfWeekYear
+  , lastWeekOfWeekYear
   ) where
 
 import Prelude
@@ -12,6 +13,9 @@ import Data.Date as Date
 import Data.Enum as Enum
 import Data.Maybe as Maybe
 import Partial.Unsafe as Unsafe
+
+firstWeekOfWeekYear :: WeekYear -> Week
+firstWeekOfWeekYear _ = bottom
 
 lastWeekOfWeekYear :: WeekYear -> Week
 lastWeekOfWeekYear wy =

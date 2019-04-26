@@ -38,7 +38,8 @@ instance enumWeekDate :: Enum WeekDate where
   pred wd@(WeekDate wy w wday)
     | wd == bottom = Nothing
     | wday /= bottom = WeekDate wy w <$> Enum.pred wday
-    | w /= firstWeekOfWeekYear wy = WeekDate wy <$> (Enum.pred w) <*> (pure top)
+    | w /= (Internal.firstWeekOfWeekYear wy) =
+        WeekDate wy <$> (Enum.pred w) <*> (pure top)
     | otherwise = do
         pwy <- Enum.pred wy
         pw <- pure (Internal.lastWeekOfWeekYear pwy)
@@ -47,11 +48,11 @@ instance enumWeekDate :: Enum WeekDate where
   succ wd@(WeekDate wy w wday)
     | wd == top = Nothing
     | wday /= top = WeekDate wy w <$> Enum.succ wday
-    | w /= Internal.lastWeekOfWeekYear wy =
+    | w /= (Internal.lastWeekOfWeekYear wy) =
         WeekDate wy <$> (Enum.succ w) <*> (pure bottom)
     | otherwise = do
         nwy <- Enum.succ wy
-        nw <- pure (firstWeekOfWeekYear nwy)
+        nw <- pure (Internal.firstWeekOfWeekYear nwy)
         nwday <- pure bottom
         pure (WeekDate nwy nw nwday)
 
@@ -71,12 +72,9 @@ date0104 y =
 firstWeekDateOfWeek :: WeekYear -> Week -> Maybe WeekDate
 firstWeekDateOfWeek wy w
   | wy == bottom = Nothing
-  | wy == top && w /= (firstWeekOfWeekYear wy) = Nothing
+  | wy == top && w /= (Internal.firstWeekOfWeekYear wy) = Nothing
   | w > (Internal.lastWeekOfWeekYear wy) = Nothing
   | otherwise = Just (WeekDate wy w bottom)
-
-firstWeekOfWeekYear :: WeekYear -> Week
-firstWeekOfWeekYear _ = bottom
 
 fromDate :: Date -> WeekDate
 fromDate d
@@ -105,7 +103,7 @@ fromDate d
       wy' <- Enum.toEnum (Enum.fromEnum y)
       woy <-
         if wy < wy' then pure (Internal.lastWeekOfWeekYear wy)
-          else if wy > wy' then pure (firstWeekOfWeekYear wy)
+          else if wy > wy' then pure (Internal.firstWeekOfWeekYear wy)
           else
             let
               doyN =
@@ -117,8 +115,8 @@ fromDate d
 
 lastWeekDateOfWeek :: WeekYear -> Week -> Maybe WeekDate
 lastWeekDateOfWeek wy w
-  | wy == bottom && w /= (Internal.lastWeekOfWeekYear wy) = Nothing
   | wy == top = Nothing
+  | wy == bottom && w /= (Internal.lastWeekOfWeekYear wy) = Nothing
   | w > (Internal.lastWeekOfWeekYear wy) = Nothing
   | otherwise = Just (WeekDate wy w top)
 
@@ -145,7 +143,7 @@ toDate (WeekDate wy w wday)
   --     2,     3,     4,     5,     6,     7,     8 (-01-04 -> 3 Wed)
   --     3,     4,     5,     6,     7,     8,     9 (-01-04 -> 2 Tue)
   --     4,     5,     6,     7,     8,     9,    10 (-01-04 -> 1 Mon)
-  | w == firstWeekOfWeekYear wy = Unsafe.unsafePartial $ Maybe.fromJust $ do
+  | w == Internal.firstWeekOfWeekYear wy = Unsafe.unsafePartial $ Maybe.fromJust $ do
       wyn <- pure (Enum.fromEnum wy)
       cy <- Enum.toEnum wyn
       py <- Enum.toEnum (wyn - 1)
