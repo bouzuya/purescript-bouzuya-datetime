@@ -2,10 +2,10 @@ module Test.Bouzuya.DateTime.WeekDate
   ( tests
   ) where
 
+import Bouzuya.DateTime.Date.Interval.Year as Year
 import Bouzuya.DateTime.OrdinalDate as OrdinalDate
 import Bouzuya.DateTime.WeekDate (Week, WeekDate, WeekYear)
 import Bouzuya.DateTime.WeekDate as WeekDate
-import Bouzuya.DateTime.WeekDate.Extra as WeekDateExtra
 import Bouzuya.DateTime.WeekDate.Interval.WeekYear as WeekYear
 import Data.Date (Date, Day, Month, Weekday(..), Year)
 import Data.Date as Date
@@ -178,8 +178,8 @@ tests = suite "Bouzuya.DateTime.WeekDate" do
       (TupleNested.uncurry6
         (\s w y o m d -> do
           Assert.equal
-            (Enum.toEnum w)
-            (WeekDateExtra.firstWeekdayOfYear <$> Enum.toEnum y)
+            ((Enum.toEnum w) :: _ Weekday)
+            ((Date.weekday <<< Year.firstDate) <$> Enum.toEnum y)
           Assert.equal'
             s
             (join (Date.exactDate <$> Enum.toEnum (y - o) <*> Enum.toEnum m <*> Enum.toEnum d))
