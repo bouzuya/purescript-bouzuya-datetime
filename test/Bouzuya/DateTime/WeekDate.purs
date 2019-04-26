@@ -8,7 +8,6 @@ import Bouzuya.DateTime.Date.Interval.Year as Year
 import Bouzuya.DateTime.OrdinalDate as OrdinalDate
 import Bouzuya.DateTime.WeekDate (Week, WeekDate, WeekYear)
 import Bouzuya.DateTime.WeekDate as WeekDate
-import Bouzuya.DateTime.WeekDate.Interval.WeekYear as WeekYear
 import Data.Date (Date, Day, Month, Weekday(..), Year)
 import Data.Date as Date
 import Data.Enum as Enum
@@ -120,47 +119,9 @@ tests = suite "Bouzuya.DateTime.WeekDate" do
       "(WeekDate (WeekYear 275760) (Week 1) Monday)"
       (show (WeekDate.fromDate top))
 
-  test "firstWeekDateOfWeek" do
-    let
-      wy1 = bottom
-      w1 = top
-    Assert.equal Nothing (WeekDate.firstWeekDateOfWeek wy1 w1)
-    let
-      wy2 = Enum.succ bottom
-      w2 = bottom
-    Assert.equal
-      (Just "(WeekDate (WeekYear -271820) (Week 1) Monday)")
-      (show <$> (wy2 >>= \wy -> WeekDate.firstWeekDateOfWeek wy w2))
-    let
-      wy3 = top
-      w3 = bottom
-    Assert.equal
-      (Just "(WeekDate (WeekYear 275760) (Week 1) Monday)")
-      (show <$> (wy3 >>= \wy -> WeekDate.firstWeekDateOfWeek wy w3))
-
   test "fromDate / toDate" do
     Assert.equal bottom (WeekDate.toDate (WeekDate.fromDate bottom))
     Assert.equal top (WeekDate.toDate (WeekDate.fromDate top))
-
-  test "lastWeekDateOfWeek" do
-    let
-      wy1 = bottom :: WeekYear
-      w1 = WeekDate.week <$> (WeekYear.lastWeekDate wy1)
-    Assert.equal
-      (Just "(WeekDate (WeekYear -271821) (Week 52) Sunday)")
-      (show <$> (w1 >>= (WeekDate.lastWeekDateOfWeek wy1)))
-    let
-      wy2 = Enum.pred (top :: WeekYear)
-      w2 = WeekDate.week <$> (wy2 >>= WeekYear.lastWeekDate)
-    Assert.equal
-      (Just "(WeekDate (WeekYear 275759) (Week 52) Sunday)")
-      (show <$> (WeekDate.lastWeekDateOfWeek <$> wy2 <*> w2 >>= identity))
-    let
-      wy3 = top
-      w3 = bottom
-    Assert.equal
-      Nothing
-      (show <$> (WeekDate.lastWeekDateOfWeek wy3 w3))
 
   test "weekDate (firstWeekdayOfYear)" do
     let

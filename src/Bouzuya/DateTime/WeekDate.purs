@@ -1,8 +1,6 @@
 module Bouzuya.DateTime.WeekDate
   ( WeekDate
-  , firstWeekDateOfWeek
   , fromDate
-  , lastWeekDateOfWeek
   , module ReExportWeek
   , module ReExportWeekYear
   , toDate
@@ -69,13 +67,6 @@ date0104 y =
   Unsafe.unsafePartial
     (Maybe.fromJust ((Enum.toEnum 4) >>= (Date.exactDate y bottom)))
 
-firstWeekDateOfWeek :: WeekYear -> Week -> Maybe WeekDate
-firstWeekDateOfWeek wy w
-  | wy == bottom = Nothing
-  | wy == top && w /= (Internal.firstWeekOfWeekYear wy) = Nothing
-  | w > (Internal.lastWeekOfWeekYear wy) = Nothing
-  | otherwise = Just (WeekDate wy w bottom)
-
 fromDate :: Date -> WeekDate
 fromDate d
   -- -271821-W52 .. -271820-W01
@@ -112,13 +103,6 @@ fromDate d
                 (doyN + (Enum.fromEnum (Date.weekday d0104)) - 4 - 1) / 7 + 1
           in Enum.toEnum woyN
       pure (WeekDate wy woy (Date.weekday d))
-
-lastWeekDateOfWeek :: WeekYear -> Week -> Maybe WeekDate
-lastWeekDateOfWeek wy w
-  | wy == top = Nothing
-  | wy == bottom && w /= (Internal.lastWeekOfWeekYear wy) = Nothing
-  | w > (Internal.lastWeekOfWeekYear wy) = Nothing
-  | otherwise = Just (WeekDate wy w top)
 
 toDate :: WeekDate -> Date
 toDate (WeekDate wy w wday)
