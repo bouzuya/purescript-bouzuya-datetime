@@ -67,7 +67,7 @@ tests = suite "Bouzuya.DateTime.Date.Interval.YearMonth" do
       (Just "(YearMonth (Year 2000) January)")
       (show <$> ((Enum.toEnum 200001) :: _ YearMonth))
 
-  test "firstDateOfMonth" do
+  test "firstDate" do
     Assert.equal
       do
         y <- Enum.toEnum 2000
@@ -79,7 +79,7 @@ tests = suite "Bouzuya.DateTime.Date.Interval.YearMonth" do
         m <- Enum.toEnum 1
         d <- Enum.toEnum 2
         date <- Date.exactDate y m d
-        pure (YearMonth.firstDateOfMonth (YearMonth.fromDate date))
+        pure (YearMonth.firstDate (YearMonth.fromDate date))
 
   test "firstDayOfMonth" do
     Assert.equal
@@ -103,7 +103,7 @@ tests = suite "Bouzuya.DateTime.Date.Interval.YearMonth" do
       (Just d1)
       (YearMonth.toDate (Date.day d1) (YearMonth.fromDate d1))
 
-  test "lastDateOfMonth" do
+  test "lastDate" do
     Assert.equal
       do
         y <- Enum.toEnum 2000
@@ -115,7 +115,7 @@ tests = suite "Bouzuya.DateTime.Date.Interval.YearMonth" do
         m <- Enum.toEnum 1
         d <- Enum.toEnum 2
         date <- Date.exactDate y m d
-        pure (YearMonth.lastDateOfMonth (YearMonth.fromDate date))
+        pure (YearMonth.lastDate (YearMonth.fromDate date))
 
   test "lastDayOfMonth" do
     Assert.equal

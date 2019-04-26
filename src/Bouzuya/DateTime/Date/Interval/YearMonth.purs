@@ -1,9 +1,9 @@
 module Bouzuya.DateTime.Date.Interval.YearMonth
   ( YearMonth
-  , firstDateOfMonth
+  , firstDate
   , firstDayOfMonth
   , fromDate
-  , lastDateOfMonth
+  , lastDate
   , lastDayOfMonth
   , toDate
   , yearMonth
@@ -62,8 +62,8 @@ bottomAsInt :: Int
 bottomAsInt =
   ((Enum.fromEnum (bottom :: Year)) * 100) + (Enum.fromEnum (bottom :: Month))
 
-firstDateOfMonth :: YearMonth -> Date
-firstDateOfMonth (YearMonth y m) =
+firstDate :: YearMonth -> Date
+firstDate (YearMonth y m) =
   Unsafe.unsafePartial (Maybe.fromJust (Date.exactDate y m bottom))
 
 firstDayOfMonth :: YearMonth -> Day
@@ -72,8 +72,8 @@ firstDayOfMonth _ = bottom
 fromDate :: Date -> YearMonth
 fromDate date = YearMonth (Date.year date) (Date.month date)
 
-lastDateOfMonth :: YearMonth -> Date
-lastDateOfMonth (YearMonth y m) =
+lastDate :: YearMonth -> Date
+lastDate (YearMonth y m) =
   Unsafe.unsafePartial
     (Maybe.fromJust (Date.exactDate y m (Date.lastDayOfMonth y m)))
 
